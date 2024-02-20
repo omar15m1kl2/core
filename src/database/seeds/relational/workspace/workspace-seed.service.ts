@@ -14,8 +14,6 @@ export class WorkspaceSeedService {
   ) {}
 
   async run() {
-    // find all users LIMIT 1
-    console.log('Workspace seed running...');
     const [user] = await this.userRepository.find({ take: 1 });
     const count = await this.workspaceRepository.count();
     if (!count && user) {
