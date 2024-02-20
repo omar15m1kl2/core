@@ -3,7 +3,7 @@ export class Workspace {
 
   title: string | null;
 
-  owner: string | null;
+  owner: number;
 
   description: string | null;
 

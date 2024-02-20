@@ -1,18 +1,22 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
+import { Workspace } from '../../../domain/workspace';
 
 @Entity({
   name: 'workspace',
 })
-export class WorkspaceEntity extends EntityRelationalHelper {
+export class WorkspaceEntity
+  extends EntityRelationalHelper
+  implements Workspace
+{
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: String })
   title: string | null;
 
-  @Column({ type: String })
-  owner: string | null;
+  @Column({ type: Number })
+  owner: number;
 
   @Column({ type: String, nullable: true })
   description: string | null;
