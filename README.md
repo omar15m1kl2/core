@@ -1,30 +1,68 @@
-# local dev
+# Local Development
 
-first time runner:
+**First time runner:**
 
-- `cp env-example-relational .env`
-- `npm run migration:run`
-- `npm install`
+1. Copy the environment file.
 
-running for dev:
+   ```bash
+   cp env-example-relational .env
+   ```
 
-- `docker compose up -d mysql adminer maildev`
-- `npm run start:dev`
-- go to:  <http://localhost:3000>
+2. Run migrations.
+
+   ```bash
+   npm run migration:run
+   ```
+
+3. Install dependencies.
+
+   ```bash
+   npm install
+   ```
+
+**Running for development:**
+
+1. Start required services using Docker.
+
+   ```bash
+   docker compose up -d mysql adminer maildev
+   ```
+
+2. Run the application in development mode.
+
+   ```bash
+   npm run start:dev
+   ```
+
+3. Open your browser and go to: [http://localhost:3000](http://localhost:3000)
 
 ------
 
-# quick run using docker
+# Quick run using Docker
 
-if its your first time:
+If it's your first time:
 
-- `cp env-example-relational .env`
-- `docker compose up -d`
-- go to:  <http://localhost:3000>
+1. Copy the environment file.
+
+   ```bash
+   cp env-example-relational .env
+   ```
+
+2. Start the application using Docker.
+
+   ```bash
+   docker compose up -d
+   ```
+
+3. Open your browser and go to: [http://localhost:3000](http://localhost:3000)
 
 ----
 
-# stopping containers
+# Stopping containers
 
-- `docker compose down mysql adminer maildev`
+To stop containers:
 
+```bash
+docker compose down
+```
+ 
