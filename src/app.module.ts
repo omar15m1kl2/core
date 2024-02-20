@@ -30,6 +30,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
+import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { DatabaseConfig } from './database/config/database-config.type';
     MailModule,
     MailerModule,
     HomeModule,
+    WorkspacesModule,
   ],
 })
 export class AppModule {}
