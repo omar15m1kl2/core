@@ -31,6 +31,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { ChannelsModule } from './channels/channels.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     MailerModule,
     HomeModule,
     WorkspacesModule,
+    ChannelsModule,
   ],
 })
 export class AppModule {}
