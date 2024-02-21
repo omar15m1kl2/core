@@ -1,15 +1,15 @@
-import { ChannelType } from 'src/channel-types/domain/channel-type';
+import { ChannelType } from '../../channel-types/domain/channel-type';
 
 export class Channel {
   id: number | string;
 
-  owner: number | string;
+  owner: number;
 
   title: string | null;
 
   description: string | null;
 
-  type: ChannelType;
+  type?: ChannelType;
 
   createdAt: Date;
 

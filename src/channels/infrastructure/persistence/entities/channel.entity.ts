@@ -4,21 +4,21 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Channel } from '../../../domain/channel';
-import { ChannelType } from 'src/channel-types/domain/channel-type';
-
+import { ChannelTypeEntity } from '../../../../channel-types/infrastructure/persistence/relational/entities/channel-type.entity';
 @Entity({
   name: 'channel',
 })
 export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @PrimaryGeneratedColumn()
-  id: number | string;
+  id: number;
 
-  @Column({ type: String })
-  owner: number | string;
+  @Column({ type: Number })
+  owner: number;
 
   @Column({ type: String, nullable: true })
   title: string | null;
@@ -26,8 +26,8 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @Column({ type: String, nullable: true })
   description: string | null;
 
-  @Column()
-  type: ChannelType;
+  @ManyToOne(() => ChannelTypeEntity)
+  type?: ChannelTypeEntity;
 
   @CreateDateColumn({ type: Date })
   createdAt: Date;
@@ -38,6 +38,6 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @DeleteDateColumn({ type: Date, nullable: true })
   deletedAt: Date;
 
-  @Column({ type: String })
-  workspace: number | string;
+  @Column({ type: Number })
+  workspace: number;
 }
