@@ -2,6 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { FileType } from 'src/files/domain/file';
 import { Role } from 'src/roles/domain/role';
 import { Status } from 'src/statuses/domain/status';
+import { Workspace } from 'src/workspaces/domain/workspace';
 
 export class User {
   id: number | string;
@@ -28,6 +29,7 @@ export class User {
   photo?: FileType | null;
   role?: Role | null;
   status?: Status;
+  workspaces: Workspace[];
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
