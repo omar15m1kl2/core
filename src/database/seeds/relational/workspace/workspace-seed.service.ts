@@ -14,8 +14,10 @@ export class WorkspaceSeedService {
   ) {}
 
   async run() {
+    // gets random user from the database to assign as owner of the workspace
     const [user] = await this.userRepository.find({ take: 1 });
     const count = await this.workspaceRepository.count();
+    // seed only if there are no workspaces in the database and there is a user
     if (!count && user) {
       await this.workspaceRepository.save([
         this.workspaceRepository.create({
