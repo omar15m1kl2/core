@@ -18,7 +18,6 @@ export class ChannelSeedService {
   ) {}
 
   async run() {
-    console.log('Seeding channels...');
     const [user] = await this.userRepository.find({ take: 1 });
     const [workspace] = await this.userRepository.find({ take: 1 });
     const count = await this.channelRepository.count();
