@@ -6,6 +6,7 @@ import {
   Entity,
   Index,
   ManyToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToMany,
@@ -19,6 +20,7 @@ import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 // We duplicate these rules because you can choose not to use adapters
 // in your project and return an ORM entity directly in response.
 import { Exclude, Expose } from 'class-transformer';
+import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
 import { User } from '../../../../domain/user';
 import { ChannelEntity } from '../../../../../channels/infrastructure/persistence/entities/channel.entity';
 
@@ -53,6 +55,9 @@ export class UserEntity extends EntityRelationalHelper implements User {
 
   @Column({ type: String, nullable: true })
   bio?: string | null;
+
+  @ManyToMany(() => WorkspaceEntity, (workspace) => workspace.members)
+  workspaces: WorkspaceEntity[];
 
   @Column({ type: String, nullable: true })
   statusMessage?: string | null;
