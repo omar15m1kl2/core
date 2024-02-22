@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ChannelTypeSeedService } from './channel-type/channel-type-seed.service';
 import { ChannelSeedService } from './channel/channel-seed.service';
+import { MessagesSeedService } from './messages/messages-seed.service';
 import { RoleSeedService } from './role/role-seed.service';
 import { SeedModule } from './seed.module';
 import { StatusSeedService } from './status/status-seed.service';
@@ -18,6 +19,7 @@ const runSeed = async () => {
   await app.get(ChannelTypeSeedService).run();
 
   await app.get(ChannelSeedService).run();
+  await app.get(MessagesSeedService).run();
 
   await app.close();
 };
