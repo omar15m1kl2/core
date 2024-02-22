@@ -31,4 +31,4 @@ import { MessagesSeedModule } from './messages/messages-seed.module';
     }),
   ],
 })
-export class SeedModule { }
+export class SeedModule {}
