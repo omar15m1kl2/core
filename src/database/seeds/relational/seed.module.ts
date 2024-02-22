@@ -9,9 +9,11 @@ import { RoleSeedModule } from './role/role-seed.module';
 import { StatusSeedModule } from './status/status-seed.module';
 import { UserSeedModule } from './user/user-seed.module';
 import { WorkspaceSeedModule } from './workspace/workspace-seed.module';
+import { MessagesSeedModule } from './messages/messages-seed.module';
 
 @Module({
   imports: [
+    MessagesSeedModule,
     RoleSeedModule,
     StatusSeedModule,
     UserSeedModule,
@@ -29,4 +31,4 @@ import { WorkspaceSeedModule } from './workspace/workspace-seed.module';
     }),
   ],
 })
-export class SeedModule {}
+export class SeedModule { }

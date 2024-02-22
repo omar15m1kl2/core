@@ -31,6 +31,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { MessagesService } from './messages/messages.service';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -51,14 +53,14 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     }),
     (databaseConfig() as DatabaseConfig).isDocumentDatabase
       ? MongooseModule.forRootAsync({
-          useClass: MongooseConfigService,
-        })
+        useClass: MongooseConfigService,
+      })
       : TypeOrmModule.forRootAsync({
-          useClass: TypeOrmConfigService,
-          dataSourceFactory: async (options: DataSourceOptions) => {
-            return new DataSource(options).initialize();
-          },
-        }),
+        useClass: TypeOrmConfigService,
+        dataSourceFactory: async (options: DataSourceOptions) => {
+          return new DataSource(options).initialize();
+        },
+      }),
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService<AllConfigType>) => ({
         fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
@@ -94,6 +96,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     MailerModule,
     HomeModule,
     WorkspacesModule,
+    MessagesModule
   ],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule { }
