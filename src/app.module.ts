@@ -31,8 +31,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
 import { WorkspacesModule } from './workspaces/workspaces.module';
-import { MessagesService } from './messages/messages.service';
 import { MessagesModule } from './messages/messages.module';
+import { ChannelsModule } from './channels/channels.module';
 
 @Module({
   imports: [

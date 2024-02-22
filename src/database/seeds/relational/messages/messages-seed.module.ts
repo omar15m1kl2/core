@@ -8,4 +8,4 @@ import { MessagesSeedService } from './messages-seed.service';
   providers: [MessagesSeedService],
   exports: [MessagesSeedService],
 })
-export class MessagesSeedModule { }
+export class MessagesSeedModule {}
