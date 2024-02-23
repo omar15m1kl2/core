@@ -1,4 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
+import { Channel } from 'src/channels/domain/channel';
 import { FileType } from 'src/files/domain/file';
 import { Role } from 'src/roles/domain/role';
 import { Status } from 'src/statuses/domain/status';
@@ -25,6 +26,7 @@ export class User {
   socialId?: string | null;
   firstName: string | null;
   lastName: string | null;
+  channels: Channel[];
   photo?: FileType | null;
   role?: Role | null;
   status?: Status;

@@ -4,12 +4,17 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Channel } from '../../../domain/channel';
 import { ChannelTypeEntity } from '../../../../channel-types/infrastructure/persistence/relational/entities/channel-type.entity';
+import { UserEntity } from '../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { WorkspaceEntity } from '../../../../workspaces/infrastructure/persistence/entities/workspace.entity';
+import { User } from '../../../../users/domain/user';
 @Entity({
   name: 'channel',
 })
@@ -17,10 +22,10 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: Number })
-  owner: number;
+  @ManyToOne(() => UserEntity)
+  owner: UserEntity;
 
-  @Column({ type: String, nullable: true })
+  @Column({ type: String })
   title: string | null;
 
   @Column({ type: String, nullable: true })
@@ -29,15 +34,19 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @ManyToOne(() => ChannelTypeEntity)
   type?: ChannelTypeEntity;
 
-  @CreateDateColumn({ type: Date })
+  @ManyToMany(() => UserEntity, (user) => user.channels)
+  @JoinTable()
+  members: User[];
+
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ type: Date, nullable: true })
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: Date, nullable: true })
+  @DeleteDateColumn()
   deletedAt: Date;
 
-  @Column({ type: Number })
-  workspace: number;
+  @ManyToOne(() => WorkspaceEntity)
+  workspace: WorkspaceEntity;
 }

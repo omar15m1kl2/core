@@ -8,6 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToMany,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -19,6 +20,7 @@ import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 // in your project and return an ORM entity directly in response.
 import { Exclude, Expose } from 'class-transformer';
 import { User } from '../../../../domain/user';
+import { ChannelEntity } from '../../../../../channels/infrastructure/persistence/entities/channel.entity';
 
 @Entity({
   name: 'user',
@@ -74,6 +76,9 @@ export class UserEntity extends EntityRelationalHelper implements User {
   @Index()
   @Column({ type: String, nullable: true })
   lastName: string | null;
+
+  @ManyToMany(() => ChannelEntity, (channel) => channel.members)
+  channels: ChannelEntity[];
 
   @ManyToOne(() => FileEntity, {
     eager: true,
