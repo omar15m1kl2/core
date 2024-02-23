@@ -14,7 +14,6 @@ import { Channel } from '../../../domain/channel';
 import { ChannelTypeEntity } from '../../../../channel-types/infrastructure/persistence/relational/entities/channel-type.entity';
 import { UserEntity } from '../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { WorkspaceEntity } from '../../../../workspaces/infrastructure/persistence/entities/workspace.entity';
-import { User } from '../../../../users/domain/user';
 @Entity({
   name: 'channel',
 })
@@ -34,9 +33,11 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @ManyToOne(() => ChannelTypeEntity)
   type?: ChannelTypeEntity;
 
-  @ManyToMany(() => UserEntity, (user) => user.channels)
+  @ManyToMany(() => UserEntity, (user) => user.channels, {
+    eager: true,
+  })
   @JoinTable()
-  members: User[];
+  members: UserEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
