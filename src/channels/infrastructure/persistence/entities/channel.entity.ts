@@ -21,7 +21,9 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, {
+    eager: true,
+  })
   owner: UserEntity;
 
   @Column({ type: String })
