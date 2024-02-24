@@ -23,9 +23,7 @@ export class WorkspaceSeedService {
         this.workspaceRepository.create({
           title: 'Workspace 1',
           description: 'Workspace 1 description',
-          owner: {
-            id: user.id,
-          },
+          owner: user,
           members: [user],
           createdAt: new Date(),
           updatedAt: new Date(),
