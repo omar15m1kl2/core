@@ -3,14 +3,19 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
+  Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Message } from '../domain/messages';
+import { Message } from '../../../domain/messages';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
+import { ChannelEntity } from 'src/channels/infrastructure/persistence/entities/channel.entity';
 
+@Entity({
+  name: 'message',
+})
 export class MessageEntity extends EntityRelationalHelper implements Message {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,13 +23,13 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   @Column({ type: String })
   content: string;
 
-  @Column({ type: Number })
-  @ManyToOne(() => UserEntity)
-  senderId: UserEntity;
+  @ManyToOne(() => UserEntity, {
+    eager: true,
+  })
+  sender: UserEntity;
 
-  @Column({ type: Number })
-  // @ManyToOne(() => ChannelEntity)
-  channelId: number;
+  @ManyToOne(() => ChannelEntity)
+  channel: ChannelEntity;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -35,11 +40,9 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @Column({ type: Number })
   @ManyToOne(() => WorkspaceEntity)
-  workspaceId: WorkspaceEntity;
+  workspace: WorkspaceEntity;
 
-  @Column({ type: Number, nullable: true })
   @ManyToOne(() => MessageEntity, { nullable: true })
-  parentMessageId: MessageEntity;
+  parentMessage: MessageEntity;
 }
