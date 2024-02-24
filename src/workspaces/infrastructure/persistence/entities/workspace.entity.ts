@@ -1,6 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  Index,
+} from 'typeorm';
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { Workspace } from '../../../domain/workspace';
+import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 
 @Entity({
   name: 'workspace',
@@ -15,18 +27,27 @@ export class WorkspaceEntity
   @Column({ type: String })
   title: string | null;
 
-  @Column({ type: Number })
-  owner: number;
+  @ManyToOne(() => UserEntity, {
+    eager: true,
+  })
+  @Index()
+  owner: UserEntity;
+
+  @ManyToMany(() => UserEntity, (user) => user.workspaces, {
+    eager: true,
+  })
+  @JoinTable()
+  members: UserEntity[];
 
   @Column({ type: String, nullable: true })
   description: string | null;
 
-  @Column({ type: Date, nullable: true })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: Date, nullable: true })
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: Date, nullable: true })
+  @DeleteDateColumn()
   deletedAt: Date;
 }
