@@ -21,6 +21,7 @@ import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
 import { User } from '../../../../domain/user';
+import { ChannelEntity } from '../../../../../channels/infrastructure/persistence/entities/channel.entity';
 
 @Entity({
   name: 'user',
@@ -79,6 +80,9 @@ export class UserEntity extends EntityRelationalHelper implements User {
   @Index()
   @Column({ type: String, nullable: true })
   lastName: string | null;
+
+  @ManyToMany(() => ChannelEntity, (channel) => channel.members)
+  channels: ChannelEntity[];
 
   @ManyToOne(() => FileEntity, {
     eager: true,
