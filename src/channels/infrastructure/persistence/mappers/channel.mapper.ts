@@ -1,6 +1,6 @@
 import { Channel } from 'src/channels/domain/channel';
 import { ChannelEntity } from 'src/channels/infrastructure/persistence/entities/channel.entity';
-import { UserMapper } from 'src/users/infrastructure/persistence/document/mappers/user.mapper';
+import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
 import { WorkspaceMapper } from 'src/workspaces/infrastructure/persistence/mappers/workspace.mapper';
@@ -36,6 +36,7 @@ export class ChannelMapper {
     });
 
     const workspace = new WorkspaceEntity();
+    workspace.id = Number(channel.workspace.id);
 
     const channelEntity = new ChannelEntity();
     if (channel.id && typeof channel.id === 'number') {
