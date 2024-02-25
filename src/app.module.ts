@@ -96,7 +96,7 @@ import { ChannelsModule } from './channels/channels.module';
     MailerModule,
     HomeModule,
     WorkspacesModule,
-    MessagesModule
+    MessagesModule,
     ChannelsModule,
   ],
   providers: [],
