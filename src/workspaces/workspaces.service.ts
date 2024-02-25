@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { WorkspaceRepository } from './infrastructure/persistence/repositories/workspace.repository';
+import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { User } from 'src/users/domain/user';
+import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -14,5 +15,15 @@ export class WorkspacesService {
       user,
       paginationOptions,
     });
+  }
+
+  async createWorkspace(user: User, createWorkspaceDto: CreateWorkspaceDto) {
+    const clonedPayload = {
+      owner: user,
+      members: [user],
+      ...createWorkspaceDto,
+    };
+
+    return this.workspaceRepository.create(clonedPayload);
   }
 }

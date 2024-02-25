@@ -6,9 +6,10 @@ import { WorkspaceEntity } from '../entities/workspace.entity';
 import { WorkspaceMapper } from '../mappers/workspace.mapper';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { User } from 'src/users/domain/user';
+import { WorkspaceRepository } from '../workspace.repository';
 
 @Injectable()
-export class WorkspaceRepository {
+export class WorkspaceRelationalRepository implements WorkspaceRepository {
   constructor(
     @InjectRepository(WorkspaceEntity)
     private readonly workspaceRepository: Repository<WorkspaceEntity>,
