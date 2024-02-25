@@ -33,9 +33,7 @@ export class WorkspaceEntity
   @Index()
   owner: UserEntity;
 
-  @ManyToMany(() => UserEntity, (user) => user.workspaces, {
-    eager: true,
-  })
+  @ManyToMany(() => UserEntity, (user) => user.workspaces)
   @JoinTable()
   members: UserEntity[];
 

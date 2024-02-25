@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { WorkspaceEntity } from '../entities/workspace.entity';
 import { WorkspaceMapper } from '../mappers/workspace.mapper';
+import { IPaginationOptions } from 'src/utils/types/pagination-options';
+import { User } from 'src/users/domain/user';
 
 @Injectable()
 export class WorkspaceRepository {
@@ -18,5 +20,24 @@ export class WorkspaceRepository {
       this.workspaceRepository.create(persistenceModel),
     );
     return WorkspaceMapper.toDomain(newEntity);
+  }
+
+  async findManyWithPagination({
+    user,
+    paginationOptions,
+  }: {
+    user: User;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Workspace[]> {
+    const entities = await this.workspaceRepository.find({
+      where: {
+        members: {
+          id: user.id as number,
+        },
+      },
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+    });
+    return entities.map((workspace) => WorkspaceMapper.toDomain(workspace));
   }
 }
