@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { MessagesSeedService } from './messages/messages-seed.service';
 import { ChannelTypeSeedService } from './channel-type/channel-type-seed.service';
 import { ChannelSeedService } from './channel/channel-seed.service';
 import { MessagesSeedService } from './messages/messages-seed.service';
@@ -16,6 +17,7 @@ const runSeed = async () => {
   await app.get(StatusSeedService).run();
   await app.get(UserSeedService).run();
   await app.get(WorkspaceSeedService).run();
+  await app.get(MessagesSeedService).run();
   await app.get(ChannelTypeSeedService).run();
 
   await app.get(ChannelSeedService).run();
