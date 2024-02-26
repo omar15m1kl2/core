@@ -1,6 +1,6 @@
 import { Message } from 'src/messages/domain/messages';
 import { MessageEntity } from '../entities/message.entity';
-import { UserMapper } from 'src/users/infrastructure/persistence/document/mappers/user.mapper';
+import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
 import { ChannelMapper } from 'src/channels/infrastructure/persistence/mappers/channel.mapper';
 import { WorkspaceMapper } from 'src/workspaces/infrastructure/persistence/mappers/workspace.mapper';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
