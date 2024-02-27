@@ -23,22 +23,44 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     return WorkspaceMapper.toDomain(newEntity);
   }
 
-  async findManyWithPagination({
-    user,
-    paginationOptions,
-  }: {
-    user: User;
-    paginationOptions: IPaginationOptions;
-  }): Promise<Workspace[]> {
+  async findManyWithPagination(
+    userId: number,
+    paginationOptions: IPaginationOptions,
+  ): Promise<Workspace[]> {
     const entities = await this.workspaceRepository.find({
       where: {
         members: {
-          id: user.id as number,
+          id: userId,
         },
       },
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
     });
     return entities.map((workspace) => WorkspaceMapper.toDomain(workspace));
+  }
+
+  async findUsersWithPagination(
+    workspaceId: number,
+    paginationOptions: IPaginationOptions,
+  ): Promise<User[]> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: {
+        id: workspaceId,
+      },
+      relations: {
+        members: true,
+      },
+    });
+
+    if (!workspace) {
+      throw new Error('Workspace not found');
+    }
+
+    const members = workspace.members.slice(
+      (paginationOptions.page - 1) * paginationOptions.limit,
+      paginationOptions.page * paginationOptions.limit,
+    );
+
+    return members;
   }
 }

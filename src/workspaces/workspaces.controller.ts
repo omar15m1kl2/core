@@ -9,9 +9,10 @@ import {
   SerializeOptions,
   UseGuards,
   Body,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 
@@ -49,5 +50,22 @@ export class WorkspacesController {
     @Body() createWorkspaceDto: CreateWorkspaceDto,
   ) {
     return this.service.createWorkspace(request.user, createWorkspaceDto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/users')
+  @ApiQuery({
+    name: 'page',
+  })
+  @ApiQuery({
+    name: 'limit',
+  })
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.OK)
+  getWorkspaceUsers(@Param('id') workspaceId, @Query() query: any) {
+    return this.service.getWorkspaceUsers(workspaceId, query);
   }
 }

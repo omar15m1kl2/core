@@ -11,10 +11,10 @@ export class WorkspacesService {
     user: User,
     paginationOptions: { page: number; limit: number },
   ) {
-    return this.workspaceRepository.findManyWithPagination({
-      user,
+    return this.workspaceRepository.findManyWithPagination(
+      user.id as number,
       paginationOptions,
-    });
+    );
   }
 
   async createWorkspace(user: User, createWorkspaceDto: CreateWorkspaceDto) {
@@ -25,5 +25,15 @@ export class WorkspacesService {
     };
 
     return this.workspaceRepository.create(clonedPayload);
+  }
+
+  async getWorkspaceUsers(
+    workspaceId: number,
+    paginationOptions: { page: number; limit: number },
+  ) {
+    return this.workspaceRepository.findUsersWithPagination(
+      workspaceId,
+      paginationOptions,
+    );
   }
 }

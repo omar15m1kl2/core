@@ -10,11 +10,13 @@ export abstract class WorkspaceRepository {
     >,
   ): Promise<Workspace>;
 
-  abstract findManyWithPagination({
-    user,
-    paginationOptions,
-  }: {
-    user: User;
-    paginationOptions: IPaginationOptions;
-  }): Promise<Workspace[]>;
+  abstract findManyWithPagination(
+    userId: number,
+    paginationOptions: IPaginationOptions,
+  ): Promise<Workspace[]>;
+
+  abstract findUsersWithPagination(
+    workspaceId: number,
+    paginationOptions: IPaginationOptions,
+  ): Promise<User[]>;
 }
