@@ -82,6 +82,6 @@ export class WorkspacesController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   removeWorkspace(@Param('id') id: Workspace['id'], @Request() request) {
-    return this.service.softDelete(id, request.user.id);
+    return this.service.remove(id, request.user);
   }
 }

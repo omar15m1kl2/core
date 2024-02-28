@@ -76,19 +76,7 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     return entity ? WorkspaceMapper.toDomain(entity) : null;
   }
 
-  async softDelete(id: Workspace['id'], userId: User['id']): Promise<void> {
-    const entity = await this.workspaceRepository.findOne({
-      where: {
-        id: Number(id),
-        owner: {
-          id: Number(userId),
-        },
-      },
-    });
-    if (!entity) {
-      throw new Error('Workspace not found');
-    }
-
+  async softDelete(id: Workspace['id']): Promise<void> {
     await this.workspaceRepository.softDelete(id);
   }
 }

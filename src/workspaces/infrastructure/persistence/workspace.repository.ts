@@ -26,5 +26,5 @@ export abstract class WorkspaceRepository {
     fields: EntityCondition<Workspace>,
   ): Promise<NullableType<Workspace>>;
 
-  abstract softDelete(id: Workspace['id'], userId: User['id']): Promise<void>;
+  abstract softDelete(id: Workspace['id']): Promise<void>;
 }

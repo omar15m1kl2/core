@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { User } from 'src/users/domain/user';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
@@ -6,7 +6,7 @@ import { Workspace } from './domain/workspace';
 
 @Injectable()
 export class WorkspacesService {
-  constructor(private workspaceRepository: WorkspaceRepository) {}
+  constructor(private readonly workspaceRepository: WorkspaceRepository) {}
 
   async getWorkspaces(
     user: User,
@@ -38,7 +38,30 @@ export class WorkspacesService {
     );
   }
 
-  async softDelete(id: Workspace['id'], userId: User['id']) {
-    await this.workspaceRepository.softDelete(id, userId);
+  async remove(id: Workspace['id'], user: User) {
+    const workspace = await this.workspaceRepository.findOne({ id });
+
+    if (!workspace) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Not Found',
+          message: 'Workspace not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (workspace?.owner.id !== user.id) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+          message: 'You are not the owner of this workspace',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    await this.workspaceRepository.softDelete(id);
   }
 }
