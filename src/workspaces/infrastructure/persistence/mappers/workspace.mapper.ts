@@ -23,7 +23,7 @@ export class WorkspaceMapper {
     const owner = new UserEntity();
     owner.id = Number(workspace.owner.id);
 
-    const members = workspace.members.map((member) => {
+    const members = workspace.members?.map((member) => {
       const user = new UserEntity();
       user.id = Number(member.id);
       return user;
