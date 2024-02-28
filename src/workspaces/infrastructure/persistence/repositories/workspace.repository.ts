@@ -24,13 +24,13 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
   }
 
   async findManyWithPagination(
-    userId: number,
+    userId: User['id'],
     paginationOptions: IPaginationOptions,
   ): Promise<Workspace[]> {
     const entities = await this.workspaceRepository.find({
       where: {
         members: {
-          id: userId,
+          id: userId as number,
         },
       },
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -40,12 +40,12 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
   }
 
   async findUsersWithPagination(
-    workspaceId: number,
+    workspaceId: Workspace['id'],
     paginationOptions: IPaginationOptions,
   ): Promise<User[]> {
     const workspace = await this.workspaceRepository.findOne({
       where: {
-        id: workspaceId,
+        id: workspaceId as number,
       },
       relations: {
         members: true,
