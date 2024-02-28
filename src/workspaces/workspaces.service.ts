@@ -29,7 +29,7 @@ export class WorkspacesService {
   }
 
   async getWorkspaceUsers(
-    workspaceId: number,
+    workspaceId: Workspace['id'],
     paginationOptions: { page: number; limit: number },
   ) {
     return this.workspaceRepository.findUsersWithPagination(

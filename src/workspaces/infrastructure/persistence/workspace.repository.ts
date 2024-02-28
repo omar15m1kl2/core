@@ -18,7 +18,7 @@ export abstract class WorkspaceRepository {
   ): Promise<Workspace[]>;
 
   abstract findUsersWithPagination(
-    workspaceId: User['id'],
+    workspaceId: Workspace['id'],
     paginationOptions: IPaginationOptions,
   ): Promise<User[]>;
 
