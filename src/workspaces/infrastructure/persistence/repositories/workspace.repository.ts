@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { WorkspaceEntity } from '../entities/workspace.entity';
 import { WorkspaceMapper } from '../mappers/workspace.mapper';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { User } from 'src/users/domain/user';
 import { WorkspaceRepository } from '../workspace.repository';
+import { NullableType } from 'src/utils/types/nullable.type';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
 
 @Injectable()
 export class WorkspaceRelationalRepository implements WorkspaceRepository {
@@ -62,5 +64,31 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     );
 
     return members;
+  }
+
+  async findOne(
+    fields: EntityCondition<Workspace>,
+  ): Promise<NullableType<Workspace>> {
+    const entity = await this.workspaceRepository.findOne({
+      where: fields as FindOptionsWhere<WorkspaceEntity>,
+    });
+
+    return entity ? WorkspaceMapper.toDomain(entity) : null;
+  }
+
+  async softDelete(id: Workspace['id'], userId: User['id']): Promise<void> {
+    const entity = await this.workspaceRepository.findOne({
+      where: {
+        id: Number(id),
+        owner: {
+          id: Number(userId),
+        },
+      },
+    });
+    if (!entity) {
+      throw new Error('Workspace not found');
+    }
+
+    await this.workspaceRepository.softDelete(id);
   }
 }

@@ -1,6 +1,8 @@
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { User } from 'src/users/domain/user';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { NullableType } from 'src/utils/types/nullable.type';
 
 export abstract class WorkspaceRepository {
   abstract create(
@@ -19,4 +21,10 @@ export abstract class WorkspaceRepository {
     workspaceId: number,
     paginationOptions: IPaginationOptions,
   ): Promise<User[]>;
+
+  abstract findOne(
+    fields: EntityCondition<Workspace>,
+  ): Promise<NullableType<Workspace>>;
+
+  abstract softDelete(id: Workspace['id'], userId: User['id']): Promise<void>;
 }

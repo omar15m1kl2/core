@@ -10,11 +10,13 @@ import {
   UseGuards,
   Body,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { Workspace } from './domain/workspace';
 
 @ApiTags('Workspaces')
 @Controller({
@@ -67,5 +69,16 @@ export class WorkspacesController {
   @HttpCode(HttpStatus.OK)
   getWorkspaceUsers(@Param('id') workspaceId, @Query() query: any) {
     return this.service.getWorkspaceUsers(workspaceId, query);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeWorkspace(@Param('id') id: Workspace['id'], @Request() request) {
+    return this.service.softDelete(id, request.user.id);
   }
 }
