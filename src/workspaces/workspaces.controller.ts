@@ -15,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { Workspace } from './domain/workspace';
 
 @ApiTags('Workspaces')
 @Controller({
@@ -65,7 +66,10 @@ export class WorkspacesController {
     name: 'id',
   })
   @HttpCode(HttpStatus.OK)
-  getWorkspaceUsers(@Param('id') workspaceId, @Query() query: any) {
+  getWorkspaceUsers(
+    @Param('id') workspaceI: Workspace['id'],
+    @Query() query: any,
+  ) {
     return this.service.getWorkspaceUsers(workspaceId, query);
   }
 }
