@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { User } from 'src/users/domain/user';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { Workspace } from './domain/workspace';
 
 @Injectable()
 export class WorkspacesService {

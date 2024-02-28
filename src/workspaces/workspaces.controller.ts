@@ -67,7 +67,7 @@ export class WorkspacesController {
   })
   @HttpCode(HttpStatus.OK)
   getWorkspaceUsers(
-    @Param('id') workspaceI: Workspace['id'],
+    @Param('id') workspaceId: Workspace['id'],
     @Query() query: any,
   ) {
     return this.service.getWorkspaceUsers(workspaceId, query);
