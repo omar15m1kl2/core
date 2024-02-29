@@ -61,7 +61,6 @@ export class WorkspacesService {
         {
           status: HttpStatus.UNAUTHORIZED,
           error: 'Unauthorized',
-          message: 'You are not the owner of this workspace',
         },
         HttpStatus.UNAUTHORIZED,
       );
@@ -89,7 +88,6 @@ export class WorkspacesService {
         {
           status: HttpStatus.UNAUTHORIZED,
           error: 'Unauthorized',
-          message: 'You are not the owner of this workspace',
         },
         HttpStatus.UNAUTHORIZED,
       );

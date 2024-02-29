@@ -82,6 +82,9 @@ export class WorkspacesController {
   @SerializeOptions({
     groups: ['me'],
   })
+  @ApiParam({
+    name: 'id',
+  })
   updateWorkspace(
     @Param('id') id: Workspace['id'],
     @Body() updateWorkspaceDto: UpdateWorkspaceDto,
