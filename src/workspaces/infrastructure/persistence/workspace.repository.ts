@@ -3,6 +3,7 @@ import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { User } from 'src/users/domain/user';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
+import { UpdateWorkspaceDto } from '../../dto/update-workspace.dto';
 
 export abstract class WorkspaceRepository {
   abstract create(
@@ -25,6 +26,11 @@ export abstract class WorkspaceRepository {
   abstract findOne(
     fields: EntityCondition<Workspace>,
   ): Promise<NullableType<Workspace>>;
+
+  abstract update(
+    workspaceId: Workspace['id'],
+    updateWorkspace: UpdateWorkspaceDto,
+  ): Promise<Workspace>;
 
   abstract softDelete(id: Workspace['id']): Promise<void>;
 }
