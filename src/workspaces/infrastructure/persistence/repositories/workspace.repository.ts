@@ -9,6 +9,7 @@ import { User } from 'src/users/domain/user';
 import { WorkspaceRepository } from '../workspace.repository';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { UpdateWorkspaceDto } from 'src/workspaces/dto/update-workspace.dto';
 
 @Injectable()
 export class WorkspaceRelationalRepository implements WorkspaceRepository {
@@ -78,5 +79,29 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
 
   async softDelete(id: Workspace['id']): Promise<void> {
     await this.workspaceRepository.softDelete(id);
+  }
+
+  async update(
+    workspaceId: Workspace['id'],
+    payload: UpdateWorkspaceDto,
+  ): Promise<Workspace> {
+    const entity = await this.workspaceRepository.findOne({
+      where: {
+        id: Number(workspaceId),
+      },
+    });
+
+    if (!entity) throw new Error('Workspace not found');
+
+    const updatedEntity = await this.workspaceRepository.save(
+      this.workspaceRepository.create(
+        WorkspaceMapper.toPersistence({
+          ...WorkspaceMapper.toDomain(entity),
+          ...payload,
+        }),
+      ),
+    );
+
+    return WorkspaceMapper.toDomain(updatedEntity);
   }
 }

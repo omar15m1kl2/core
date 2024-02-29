@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   HttpCode,
   HttpStatus,
   Query,
@@ -17,6 +18,7 @@ import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { Workspace } from './domain/workspace';
+import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 
 @ApiTags('Workspaces')
 @Controller({
@@ -72,6 +74,23 @@ export class WorkspacesController {
     @Query() query: any,
   ) {
     return this.service.getWorkspaceUsers(workspaceId, query);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id')
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @ApiParam({
+    name: 'id',
+  })
+  updateWorkspace(
+    @Param('id') id: Workspace['id'],
+    @Body() updateWorkspaceDto: UpdateWorkspaceDto,
+    @Request() request,
+  ) {
+    return this.service.updateWorkspace(id, request.user, updateWorkspaceDto);
   }
 
   @ApiBearerAuth()
