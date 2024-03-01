@@ -6,7 +6,7 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class ChannelRepository {
+export class ChannelRelationalRepository {
   constructor(
     @InjectRepository(ChannelEntity)
     private readonly channelRepository: Repository<ChannelEntity>,

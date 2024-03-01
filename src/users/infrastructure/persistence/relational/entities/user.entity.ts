@@ -22,12 +22,14 @@ import { Exclude, Expose } from 'class-transformer';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
 import { User } from '../../../../domain/user';
 import { ChannelEntity } from '../../../../../channels/infrastructure/persistence/entities/channel.entity';
+import { IsDefined } from 'class-validator';
 
 @Entity({
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper implements User {
   @PrimaryGeneratedColumn()
+  @IsDefined()
   id: number;
 
   // For "string | null" we need to use String type.
