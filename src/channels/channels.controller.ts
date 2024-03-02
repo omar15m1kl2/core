@@ -62,13 +62,17 @@ export class ChannelsController {
     required: false,
   })
   @HttpCode(HttpStatus.OK)
-  getChannelMessages(@Param('id') id: Channel['id'], @Query() query: any) {
+  getChannelMessages(
+    @Param('id') id: Channel['id'],
+    @Request() request,
+    @Query() query: any,
+  ) {
     query.page = query.page ?? 1;
     query.limit = query.limit ?? 20;
     if (query.limit > 100) {
       query.limit = 100;
     }
-    return this.channelsService.getChannelMessages(id, query);
+    return this.channelsService.getChannelMessages(request.user, id, query);
   }
 
   @ApiBearerAuth()
