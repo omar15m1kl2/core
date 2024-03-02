@@ -1,4 +1,5 @@
 import { Channel } from 'src/channels/domain/channel';
+import { UpdateChannelDto } from 'src/channels/dto/update-channel.dto';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
 
@@ -13,6 +14,8 @@ export abstract class ChannelRepository {
   abstract findOne(
     fields: EntityCondition<Channel>,
   ): Promise<NullableType<Channel>>;
+
+  abstract update(id: Channel['id'], data: UpdateChannelDto): Promise<Channel>;
 
   abstract softDelete(id: Channel['id']): Promise<void>;
 }
