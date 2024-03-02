@@ -1,4 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
+import { IsDefined } from 'class-validator';
 import { Channel } from 'src/channels/domain/channel';
 import { FileType } from 'src/files/domain/file';
 import { Role } from 'src/roles/domain/role';
@@ -6,6 +8,8 @@ import { Status } from 'src/statuses/domain/status';
 import { Workspace } from 'src/workspaces/domain/workspace';
 
 export class User {
+  @ApiProperty({ example: 1 })
+  @IsDefined()
   id: number | string;
 
   @Expose({ groups: ['me', 'admin'] })
