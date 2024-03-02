@@ -6,11 +6,14 @@ import {
   Post,
   UseGuards,
   Request,
+  Param,
+  Get,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { Channel } from './domain/channel';
 
 @ApiTags('Channels')
 @Controller({
@@ -29,5 +32,16 @@ export class ChannelsController {
     @Body() createChannelDto: CreateChannelDto,
   ) {
     return this.channelsService.createChannel(request.user, createChannelDto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.OK)
+  getChannelById(@Request() request, @Param('id') id: Channel['id']) {
+    return this.channelsService.getChannelById(request.user, id);
   }
 }
