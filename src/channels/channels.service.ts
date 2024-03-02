@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ChannelRepository } from './infrastructure/persistence/channel.repository';
 import { User } from 'src/users/domain/user';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -6,7 +10,7 @@ import { Channel } from './domain/channel';
 
 @Injectable()
 export class ChannelsService {
-  constructor(private readonly ChannelRepostory: ChannelRepository) {}
+  constructor(private readonly channelRepostory: ChannelRepository) {}
 
   async createChannel(user: User, createChannelDto: CreateChannelDto) {
     createChannelDto.members
@@ -18,11 +22,11 @@ export class ChannelsService {
       ...createChannelDto,
     };
 
-    return this.ChannelRepostory.create(clonedPayload);
+    return this.channelRepostory.create(clonedPayload);
   }
 
   async getChannelById(user: User, id: Channel['id']) {
-    const channel = await this.ChannelRepostory.findOne({ id });
+    const channel = await this.channelRepostory.findOne({ id });
 
     if (!channel) {
       throw new Error('Channel not found');
@@ -33,5 +37,18 @@ export class ChannelsService {
     }
 
     return channel;
+  }
+
+  async softDelete(user: User, id: Channel['id']): Promise<void> {
+    const channel = await this.channelRepostory.findOne({ id });
+    if (!channel) {
+      throw new NotFoundException();
+    }
+
+    if (channel.owner.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+
+    await this.channelRepostory.softDelete(id);
   }
 }
