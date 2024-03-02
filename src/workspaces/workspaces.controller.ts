@@ -61,9 +61,11 @@ export class WorkspacesController {
   @Get(':id/users')
   @ApiQuery({
     name: 'page',
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
+    required: false,
   })
   @ApiParam({
     name: 'id',
@@ -73,6 +75,12 @@ export class WorkspacesController {
     @Param('id') workspaceId: Workspace['id'],
     @Query() query: any,
   ) {
+    query.page = query.page ?? 1;
+    query.limit = query.limit ?? 10;
+    if (query.limit > 50) {
+      query.limit = 50;
+    }
+
     return this.service.getWorkspaceUsers(workspaceId, query);
   }
 
