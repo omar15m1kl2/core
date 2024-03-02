@@ -81,9 +81,11 @@ export class WorkspacesController {
   @Get(':id/channels')
   @ApiQuery({
     name: 'page',
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
+    required: false,
   })
   @ApiParam({
     name: 'id',
