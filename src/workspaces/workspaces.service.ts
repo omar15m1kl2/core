@@ -39,6 +39,16 @@ export class WorkspacesService {
     );
   }
 
+  async getWorkspaceChannels(
+    workspaceId: Workspace['id'],
+    paginationOptions: { page: number; limit: number },
+  ) {
+    return this.workspaceRepository.findChannelsWithPagination(
+      workspaceId,
+      paginationOptions,
+    );
+  }
+
   async updateWorkspace(
     id: Workspace['id'],
     user: User,

@@ -10,6 +10,7 @@ import { WorkspaceRepository } from '../workspace.repository';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { UpdateWorkspaceDto } from 'src/workspaces/dto/update-workspace.dto';
+import { Channel } from '../../../../channels/domain/channel';
 
 @Injectable()
 export class WorkspaceRelationalRepository implements WorkspaceRepository {
@@ -65,6 +66,29 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     );
 
     return members;
+  }
+
+  async findChannelsWithPagination(
+    workspaceId: Workspace['id'],
+    paginationOptions: IPaginationOptions,
+  ): Promise<Channel[]> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId as number },
+      relations: {
+        channels: true,
+      },
+    });
+
+    if (!workspace) {
+      throw new Error('Workspace not found');
+    }
+
+    const channels = workspace.channels.slice(
+      (paginationOptions.page - 1) * paginationOptions.limit,
+      paginationOptions.page * paginationOptions.limit,
+    );
+
+    return channels;
   }
 
   async findOne(

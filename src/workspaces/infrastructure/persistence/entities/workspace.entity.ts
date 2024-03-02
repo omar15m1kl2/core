@@ -9,10 +9,12 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { Workspace } from '../../../domain/workspace';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
+import { ChannelEntity } from '../../../../channels/infrastructure/persistence/entities/channel.entity';
 
 @Entity({
   name: 'workspace',
@@ -36,6 +38,9 @@ export class WorkspaceEntity
   @ManyToMany(() => UserEntity, (user) => user.workspaces)
   @JoinTable()
   members: UserEntity[];
+
+  @OneToMany(() => ChannelEntity, (channel) => channel.workspace)
+  channels: ChannelEntity[];
 
   @Column({ type: String, nullable: true })
   description: string | null;
