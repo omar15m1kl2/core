@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { User } from 'src/users/domain/user';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
@@ -46,24 +50,11 @@ export class WorkspacesService {
   ) {
     const workspace = await this.workspaceRepository.findOne({ id });
     if (!workspace) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'Not Found',
-          message: 'Workspace not found',
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException();
     }
 
     if (workspace?.owner.id !== user.id) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNAUTHORIZED,
-          error: 'Unauthorized',
-        },
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException();
     }
 
     return this.workspaceRepository.update(id, updateWorkspaceDto);
@@ -73,24 +64,11 @@ export class WorkspacesService {
     const workspace = await this.workspaceRepository.findOne({ id });
 
     if (!workspace) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'Not Found',
-          message: 'Workspace not found',
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException();
     }
 
     if (workspace?.owner.id !== user.id) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNAUTHORIZED,
-          error: 'Unauthorized',
-        },
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException();
     }
     await this.workspaceRepository.softDelete(id);
   }
