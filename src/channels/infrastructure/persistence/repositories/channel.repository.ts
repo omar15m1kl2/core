@@ -30,4 +30,8 @@ export class ChannelRelationalRepository {
     });
     return entity ? ChannelMapper.toDomain(entity) : null;
   }
+
+  async softDelete(id: Channel['id']): Promise<void> {
+    await this.channelRepository.softDelete(id);
+  }
 }

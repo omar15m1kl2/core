@@ -8,6 +8,7 @@ import {
   Request,
   Param,
   Get,
+  Delete,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -43,5 +44,16 @@ export class ChannelsController {
   @HttpCode(HttpStatus.OK)
   getChannelById(@Request() request, @Param('id') id: Channel['id']) {
     return this.channelsService.getChannelById(request.user, id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: Channel['id'], @Request() request): Promise<void> {
+    return this.channelsService.softDelete(request.user, id);
   }
 }

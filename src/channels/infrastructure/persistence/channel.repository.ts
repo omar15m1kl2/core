@@ -13,4 +13,6 @@ export abstract class ChannelRepository {
   abstract findOne(
     fields: EntityCondition<Channel>,
   ): Promise<NullableType<Channel>>;
+
+  abstract softDelete(id: Channel['id']): Promise<void>;
 }
