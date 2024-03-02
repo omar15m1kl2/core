@@ -4,12 +4,13 @@ import { User } from 'src/users/domain/user';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { UpdateWorkspaceDto } from '../../dto/update-workspace.dto';
+import { Channel } from '../../../channels/domain/channel';
 
 export abstract class WorkspaceRepository {
   abstract create(
     data: Omit<
       Workspace,
-      'id' | 'members' | 'createdAt' | 'updatedAt' | 'deletedAt'
+      'id' | 'members' | 'channels' | 'createdAt' | 'updatedAt' | 'deletedAt'
     >,
   ): Promise<Workspace>;
 
@@ -22,6 +23,11 @@ export abstract class WorkspaceRepository {
     workspaceId: Workspace['id'],
     paginationOptions: IPaginationOptions,
   ): Promise<User[]>;
+
+  abstract findChannelsWithPagination(
+    workspaceId: Workspace['id'],
+    paginationOptions: IPaginationOptions,
+  ): Promise<Channel[]>;
 
   abstract findOne(
     fields: EntityCondition<Workspace>,

@@ -78,6 +78,26 @@ export class WorkspacesController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @Get(':id/channels')
+  @ApiQuery({
+    name: 'page',
+  })
+  @ApiQuery({
+    name: 'limit',
+  })
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.OK)
+  getWorkspaceChannels(
+    @Param('id') workspaceId: Workspace['id'],
+    @Query() query: any,
+  ) {
+    return this.service.getWorkspaceChannels(workspaceId, query);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @SerializeOptions({
     groups: ['me'],
