@@ -39,6 +39,16 @@ export class ChannelsService {
     return channel;
   }
 
+  async getChannelMessages(
+    id: Channel['id'],
+    paginationOptions: { page: number; limit: number },
+  ) {
+    return await this.channelRepostory.findMessagesWithPagination(
+      id,
+      paginationOptions,
+    );
+  }
+
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {

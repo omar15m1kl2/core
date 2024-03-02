@@ -9,10 +9,11 @@ import {
   Param,
   Get,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Channel } from './domain/channel';
 
@@ -44,6 +45,30 @@ export class ChannelsController {
   @HttpCode(HttpStatus.OK)
   getChannelById(@Request() request, @Param('id') id: Channel['id']) {
     return this.channelsService.getChannelById(request.user, id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/messages')
+  @ApiParam({
+    name: 'id',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+  })
+  @HttpCode(HttpStatus.OK)
+  getChannelMessages(@Param('id') id: Channel['id'], @Query() query: any) {
+    query.page = query.page ?? 1;
+    query.limit = query.limit ?? 20;
+    if (query.limit > 100) {
+      query.limit = 100;
+    }
+    return this.channelsService.getChannelMessages(id, query);
   }
 
   @ApiBearerAuth()
