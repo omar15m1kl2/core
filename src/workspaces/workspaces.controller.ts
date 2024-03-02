@@ -95,6 +95,11 @@ export class WorkspacesController {
     @Param('id') workspaceId: Workspace['id'],
     @Query() query: any,
   ) {
+    query.page = query.page ?? 1;
+    query.limit = query.limit ?? 10;
+    if (query.limit > 50) {
+      query.limit = 50;
+    }
     return this.service.getWorkspaceChannels(workspaceId, query);
   }
 
