@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -49,7 +50,7 @@ export class ChannelsService {
       throw new NotFoundException();
     }
     if (channel.members.find((member) => member.id !== user.id)) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
     return await this.channelRepostory.findMessagesWithPagination(
