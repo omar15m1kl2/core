@@ -1,7 +1,7 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { User } from 'src/users/domain/user';
@@ -64,7 +64,7 @@ export class WorkspacesService {
     }
 
     if (workspace?.owner.id !== user.id) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
     return this.workspaceRepository.update(id, updateWorkspaceDto);
@@ -78,7 +78,7 @@ export class WorkspacesService {
     }
 
     if (workspace?.owner.id !== user.id) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
     await this.workspaceRepository.softDelete(id);
   }

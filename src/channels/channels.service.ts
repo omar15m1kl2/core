@@ -1,7 +1,7 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ChannelRepository } from './infrastructure/persistence/channel.repository';
 import { User } from 'src/users/domain/user';
@@ -33,7 +33,7 @@ export class ChannelsService {
     }
 
     if (!channel.members.find((member) => member.id === user.id)) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
     return channel;
@@ -46,7 +46,7 @@ export class ChannelsService {
     }
 
     if (channel.owner.id !== user.id) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
     await this.channelRepostory.softDelete(id);
