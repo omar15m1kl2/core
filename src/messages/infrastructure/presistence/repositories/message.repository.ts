@@ -6,6 +6,7 @@ import { MessageMapper } from '../mappers/message.mapper';
 import { Message } from 'src/messages/domain/message';
 import { Channel } from 'src/channels/domain/channel';
 import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
+import convertUTCDateToLocalDate from 'src/utils/convert-timezone';
 
 @Injectable()
 export class MessageRelationalRepository {
@@ -31,6 +32,16 @@ export class MessageRelationalRepository {
         id: paginationOptions.cursor,
       },
     });
+
+    console.log(
+      'message',
+      message?.createdAt.toISOString().slice(0, 19).replace('T', ' '),
+    );
+
+    console.log(
+      'localDate: ',
+      convertUTCDateToLocalDate(message?.createdAt as Date),
+    );
 
     if (!message) {
       throw new Error('Message not found');
@@ -73,8 +84,8 @@ export class MessageRelationalRepository {
         'parentMessage.id',
       ])
       .where('message.channelId = :channelId', { channelId })
-      .andWhere('message.createdAt <= :createdAt', {
-        createdAt: message?.createdAt
+      .andWhere(`CAST(FLOOR(message.createdAt) AS DATETIME) <= :createdAt`, {
+        createdAt: convertUTCDateToLocalDate(message?.createdAt as Date)
           .toISOString()
           .slice(0, 19)
           .replace('T', ' '),
