@@ -33,15 +33,19 @@ export class WorkspacesController {
   @Get()
   @ApiQuery({
     name: 'page',
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
+    required: false,
   })
   @SerializeOptions({
     groups: ['me'],
   })
   @HttpCode(HttpStatus.OK)
   getWorkspaces(@Request() request, @Query() query: any) {
+    query.page = query.page ?? 1;
+    query.limit = query.limit ?? 10;
     return this.service.getWorkspaces(request.user, query);
   }
 

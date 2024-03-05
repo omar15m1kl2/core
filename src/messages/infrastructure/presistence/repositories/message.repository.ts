@@ -33,16 +33,6 @@ export class MessageRelationalRepository {
       },
     });
 
-    console.log(
-      'message',
-      message?.createdAt.toISOString().slice(0, 19).replace('T', ' '),
-    );
-
-    console.log(
-      'localDate: ',
-      convertUTCDateToLocalDate(message?.createdAt as Date),
-    );
-
     if (!message) {
       throw new Error('Message not found');
     }
