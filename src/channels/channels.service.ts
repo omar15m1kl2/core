@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -39,25 +38,6 @@ export class ChannelsService {
 
     return channel;
   }
-
-  // async getChannelMessages(
-  //   user: User,
-  //   id: Channel['id'],
-  //   paginationOptions: { cursor: number; limit: number },
-  // ) {
-  //   const channel = await this.channelRepostory.findOne({ id });
-  //   if (!channel) {
-  //     throw new NotFoundException();
-  //   }
-  //   if (channel.members.find((member) => member.id !== user.id)) {
-  //     throw new UnauthorizedException();
-  //   }
-
-  //   return await this.channelRepostory.findMessagesWithCursorPagination(
-  //     id,
-  //     paginationOptions,
-  //   );
-  // }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
