@@ -6,7 +6,7 @@ import { MessageMapper } from '../mappers/message.mapper';
 import { Message } from 'src/messages/domain/message';
 import { Channel } from 'src/channels/domain/channel';
 import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
-import convertUTCDateToLocalDate from 'src/utils/convert-timezone';
+import convertDateToUTC from 'src/utils/convert-timezone';
 
 @Injectable()
 export class MessageRelationalRepository {
@@ -75,7 +75,7 @@ export class MessageRelationalRepository {
       ])
       .where('message.channelId = :channelId', { channelId })
       .andWhere(`CAST(FLOOR(message.createdAt) AS DATETIME) <= :createdAt`, {
-        createdAt: convertUTCDateToLocalDate(message?.createdAt as Date)
+        createdAt: convertDateToUTC(message?.createdAt)
           .toISOString()
           .slice(0, 19)
           .replace('T', ' '),
