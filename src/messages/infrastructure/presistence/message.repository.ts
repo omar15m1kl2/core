@@ -10,5 +10,5 @@ export abstract class MessageRepository {
   abstract findMessagesWithCursorPagination(
     id: Channel['id'],
     paginationOptions: ICursorPaginationOptions,
-  ): Promise<Message[]>;
+  ): Promise<{ messages: Message[]; nextCursor: number | null }>;
 }

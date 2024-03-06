@@ -26,7 +26,7 @@ export class MessageRelationalRepository {
   async findMessagesWithCursorPagination(
     channelId: Channel['id'],
     paginationOptions: ICursorPaginationOptions,
-  ): Promise<Message[]> {
+  ): Promise<{ messages: Message[]; nextCursor: number | null }> {
     const message = await this.messageRepository.findOne({
       where: {
         id: paginationOptions.cursor,
@@ -82,9 +82,17 @@ export class MessageRelationalRepository {
       })
       .andWhere('message.parentMessageId IS NULL')
       .orderBy('message.createdAt', 'DESC')
-      .take(paginationOptions.limit)
+      .take(paginationOptions.limit + 1)
       .getMany();
 
-    return messages.map((message) => MessageMapper.toDomain(message));
+    let nextCursor: number | null = null;
+    if (messages.length > paginationOptions.limit) {
+      nextCursor = messages.pop()?.id ?? null;
+    }
+
+    return {
+      messages: messages.map((message) => MessageMapper.toDomain(message)),
+      nextCursor: nextCursor ? nextCursor : null,
+    };
   }
 }
