@@ -92,7 +92,7 @@ export class MessageRelationalRepository {
 
     return {
       messages: messages.map((message) => MessageMapper.toDomain(message)),
-      nextCursor: nextCursor ? nextCursor : null,
+      nextCursor,
     };
   }
 }
