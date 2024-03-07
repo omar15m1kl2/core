@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -37,6 +38,23 @@ export class ChannelsService {
     }
 
     return channel;
+  }
+
+  async update(
+    user: User,
+    id: Channel['id'],
+    payload: Partial<Channel>,
+  ): Promise<Channel | null> {
+    const channel = await this.channelRepostory.findOne({ id });
+    if (!channel) {
+      throw new NotFoundException();
+    }
+
+    if (channel.owner.id !== user.id) {
+      throw new ForbiddenException();
+    }
+
+    return this.channelRepostory.update(id, payload);
   }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {

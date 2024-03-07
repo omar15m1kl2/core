@@ -50,6 +50,8 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.channels)
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.channels, {
+    eager: true,
+  })
   workspace: WorkspaceEntity;
 }
