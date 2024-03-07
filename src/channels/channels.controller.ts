@@ -18,6 +18,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Channel } from './domain/channel';
 import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
 import { MessagesService } from 'src/messages/messages.service';
+import { QueryUserDto } from '../users/dto/query-user.dto';
+import { infinityPagination } from '../utils/infinity-pagination';
 
 @ApiTags('Channels')
 @Controller({
@@ -80,6 +82,39 @@ export class ChannelsController {
       query.limit = 100;
     }
     return this.messageService.getMessagesWithCursorPagination(id, query);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/users')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getChannelUsers(
+    @Param('id') channelId: Channel['id'],
+    @Query() query: QueryUserDto,
+  ) {
+    const page = query?.page ?? 1;
+    let limit = query?.limit ?? 10;
+    if (limit > 50) {
+      limit = 50;
+    }
+
+    return infinityPagination(
+      await this.channelsService.getChannelUsers({
+        filterOptions: {
+          channelId,
+          ...query?.filters,
+        },
+        sortOptions: query?.sort,
+        paginationOptions: {
+          page,
+          limit,
+        },
+      }),
+      { page, limit },
+    );
   }
 
   @ApiBearerAuth()

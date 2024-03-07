@@ -7,10 +7,16 @@ import { ChannelRepository } from './infrastructure/persistence/channel.reposito
 import { User } from 'src/users/domain/user';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { Channel } from './domain/channel';
+import { FilterUserDto, SortUserDto } from '../users/dto/query-user.dto';
+import { IPaginationOptions } from '../utils/types/pagination-options';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ChannelsService {
-  constructor(private readonly channelRepostory: ChannelRepository) {}
+  constructor(
+    private readonly channelRepostory: ChannelRepository,
+    private readonly userService: UsersService,
+  ) {}
 
   async createChannel(user: User, createChannelDto: CreateChannelDto) {
     createChannelDto.members
@@ -37,6 +43,22 @@ export class ChannelsService {
     }
 
     return channel;
+  }
+
+  async getChannelUsers({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterUserDto | null;
+    sortOptions?: SortUserDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<User[]> {
+    return this.userService.findManyWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
   }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {
