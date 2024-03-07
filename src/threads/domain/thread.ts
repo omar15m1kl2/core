@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { Message } from 'src/messages/domain/messages';
-import { User } from 'src/users/domain/user';
+import { User } from '../../users/domain/user';
+import { Message } from '../../messages/domain/messages';
 
 export class Thread {
   @ApiProperty({
