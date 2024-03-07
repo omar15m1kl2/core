@@ -1,7 +1,7 @@
-import { Thread } from 'src/threads/domain/thread';
+import { MessageEntity } from '../../../../../messages/infrastructure/presistence/entities/message.entity';
+import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { Thread } from '../../../../domain/thread';
 import { ThreadEntity } from '../entities/thread.entity';
-import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
-import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
 
 export class ThreadMapper {
   static toDomain(raw: ThreadEntity): Thread {

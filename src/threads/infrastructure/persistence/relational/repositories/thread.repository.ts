@@ -3,12 +3,12 @@ import { ThreadRepository } from '../threads.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ThreadEntity } from '../entities/thread.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { Thread } from 'src/threads/domain/thread';
 import { ThreadMapper } from '../mappers/thread.mapper';
-import { IPaginationOptions } from 'src/utils/types/pagination-options';
-import { EntityCondition } from 'src/utils/types/entity-condition.type';
-import { NullableType } from 'src/utils/types/nullable.type';
-import { User } from 'src/users/domain/user';
+import { User } from '../../../../../users/domain/user';
+import { Thread } from '../../../../domain/thread';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { EntityCondition } from '../../../../../utils/types/entity-condition.type';
+import { NullableType } from '../../../../../utils/types/nullable.type';
 
 @Injectable()
 export class ThreadRelationalRepository implements ThreadRepository {

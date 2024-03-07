@@ -1,8 +1,8 @@
-import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
-import { Thread } from 'src/threads/domain/thread';
-import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
-import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Thread } from '../../../../domain/thread';
+import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { MessageEntity } from '../../../../../messages/infrastructure/presistence/entities/message.entity';
 
 @Entity({
   name: 'thread',
