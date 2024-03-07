@@ -1,5 +1,5 @@
 import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
-import { Thread } from 'src/threads/domain/threads';
+import { Thread } from 'src/threads/domain/thread';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -9,11 +9,15 @@ import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 })
 export class ThreadEntity extends EntityRelationalHelper implements Thread {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number | string;
 
-  @ManyToOne(() => UserEntity)
-  participate: UserEntity;
+  @ManyToOne(() => UserEntity, {
+    eager: true,
+  })
+  participants: UserEntity[];
 
-  @ManyToOne(() => MessageEntity)
+  @ManyToOne(() => MessageEntity, {
+    eager: true,
+  })
   parentMessage: MessageEntity;
 }
