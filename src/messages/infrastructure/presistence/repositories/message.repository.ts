@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MessageEntity } from '../entities/message.entity';
 import { Repository } from 'typeorm';
 import { MessageMapper } from '../mappers/message.mapper';
-import { Message } from 'src/messages/domain/messages';
+import { Message } from '../../../domain/message';
 
 @Injectable()
 export class MessageRepository {
