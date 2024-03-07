@@ -35,7 +35,7 @@ export class ChannelsService {
     const channel = await this.channelRepostory.findOne({ id });
 
     if (!channel) {
-      throw new Error('Channel not found');
+      throw new NotFoundException();
     }
 
     if (!channel.members.find((member) => member.id === user.id)) {
@@ -43,6 +43,23 @@ export class ChannelsService {
     }
 
     return channel;
+  }
+
+  async update(
+    user: User,
+    id: Channel['id'],
+    payload: Partial<Channel>,
+  ): Promise<Channel | null> {
+    const channel = await this.channelRepostory.findOne({ id });
+    if (!channel) {
+      throw new NotFoundException();
+    }
+
+    if (channel.owner.id !== user.id) {
+      throw new ForbiddenException();
+    }
+
+    return this.channelRepostory.update(id, payload);
   }
 
   async getChannelUsers({

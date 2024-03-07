@@ -9,6 +9,7 @@ import {
   Param,
   Get,
   Delete,
+  Patch,
   Query,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
@@ -16,6 +17,7 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Channel } from './domain/channel';
+import { UpdateChannelDto } from './dto/update-channel.dto';
 import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
 import { MessagesService } from 'src/messages/messages.service';
 import { QueryUserDto } from '../users/dto/query-user.dto';
@@ -52,6 +54,21 @@ export class ChannelsController {
   @HttpCode(HttpStatus.OK)
   getChannelById(@Request() request, @Param('id') id: Channel['id']) {
     return this.channelsService.getChannelById(request.user, id);
+  }
+
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  update(
+    @Param('id') id: Channel['id'],
+    @Body() updateChannelDto: UpdateChannelDto,
+    @Request() request,
+  ): Promise<Channel | null> {
+    return this.channelsService.update(request.user, id, updateChannelDto);
   }
 
   @ApiBearerAuth()
