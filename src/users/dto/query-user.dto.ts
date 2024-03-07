@@ -9,6 +9,7 @@ import { Transform, Type, plainToInstance } from 'class-transformer';
 import { User } from '../domain/user';
 import { RoleDto } from 'src/roles/dto/role.dto';
 import { Workspace } from '../../workspaces/domain/workspace';
+import { Channel } from '../../channels/domain/channel';
 
 export class FilterUserDto {
   @ApiProperty({ type: RoleDto })
@@ -21,7 +22,13 @@ export class FilterUserDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => Workspace)
-  workspaceId: Workspace['id'];
+  workspaceId?: Workspace['id'] | null;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => Channel)
+  channelId?: Channel['id'] | null;
 }
 
 export class SortUserDto {

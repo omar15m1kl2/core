@@ -83,7 +83,7 @@ export class WorkspacesController {
       await this.service.getWorkspaceUsers({
         filterOptions: {
           workspaceId,
-          roles: query?.filters?.roles,
+          ...query?.filters,
         },
         sortOptions: query?.sort,
         paginationOptions: {
