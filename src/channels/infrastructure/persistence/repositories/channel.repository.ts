@@ -6,7 +6,6 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
-import { UpdateChannelDto } from 'src/channels/dto/update-channel.dto';
 
 @Injectable()
 export class ChannelRelationalRepository {
@@ -32,23 +31,20 @@ export class ChannelRelationalRepository {
     return entity ? ChannelMapper.toDomain(entity) : null;
   }
 
-  async update(id: Channel['id'], data: UpdateChannelDto): Promise<Channel> {
-    await this.channelRepository.update(id, data);
-    const updatedEntity = await this.channelRepository.findOne({
-      where: {
-        id: id,
-      },
+  async update(id: Channel['id'], payload: Partial<Channel>): Promise<Channel> {
+    const entity = await this.channelRepository.findOne({
+      where: { id: Number(id) },
     });
 
-    if (!updatedEntity) {
-      throw new Error('Entity not found');
+    if (!entity) {
+      throw new Error('Channel not found');
     }
 
     const updatedChannel = await this.channelRepository.save(
       this.channelRepository.create(
         ChannelMapper.toPersistence({
-          ...ChannelMapper.toDomain(updatedEntity),
-          ...data,
+          ...ChannelMapper.toDomain(entity),
+          ...payload,
         }),
       ),
     );
