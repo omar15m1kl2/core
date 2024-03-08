@@ -33,7 +33,6 @@ export class MessagesSeedService {
           sender: user,
           workspace: workspace,
           channel: channel,
-          createdAt: new Date(),
         }),
       ]);
     }
