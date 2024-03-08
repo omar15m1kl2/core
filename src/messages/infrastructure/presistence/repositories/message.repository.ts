@@ -8,7 +8,6 @@ import { Channel } from 'src/channels/domain/channel';
 import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
 import convertDateToUTC from 'src/utils/convert-timezone';
 
-
 @Injectable()
 export class MessageRelationalRepository {
   constructor(
