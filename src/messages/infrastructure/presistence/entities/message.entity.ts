@@ -28,7 +28,7 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   })
   sender: UserEntity;
 
-  @ManyToOne(() => ChannelEntity)
+  @ManyToOne(() => ChannelEntity, (channel) => channel.messages)
   channel: ChannelEntity;
 
   @CreateDateColumn()
