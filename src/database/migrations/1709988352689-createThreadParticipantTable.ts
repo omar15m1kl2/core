@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateThreadParticipantTable1709977965342 implements MigrationInterface {
-    name = 'CreateThreadParticipantTable1709977965342'
+export class CreateThreadParticipantTable1709988352689 implements MigrationInterface {
+    name = 'CreateThreadParticipantTable1709988352689'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE \`thread_participant\` (\`participantId\` int NOT NULL, \`parentMessageId\` int NOT NULL, PRIMARY KEY (\`participantId\`, \`parentMessageId\`)) ENGINE=InnoDB`);

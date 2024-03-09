@@ -33,7 +33,7 @@ import { DatabaseConfig } from './database/config/database-config.type';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { MessagesModule } from './messages/messages.module';
 import { ChannelsModule } from './channels/channels.module';
-import { ThreadsModule } from './threads/threads.module';
+import { ThreadsModule } from './thread-participants/thread-participants.module';
 
 @Module({
   imports: [

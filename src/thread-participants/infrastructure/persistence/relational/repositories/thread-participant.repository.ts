@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { ThreadRepository } from '../threads.repository';
+import { ThreadParticipantRepository } from '../thread-participant.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ThreadParticipantEntity } from '../entities/thread.entity';
+import { ThreadParticipantEntity } from '../entities/thread-participant.entity';
 import { Repository } from 'typeorm';
-import { ThreadMapper } from '../mappers/thread.mapper';
-import { ThreadParticipant } from '../../../../domain/thread';
+import { ThreadMapper } from '../mappers/thread-participant.mapper';
+import { ThreadParticipant } from '../../../../domain/thread-participant';
 
 @Injectable()
-export class ThreadRelationalRepository implements ThreadRepository {
+export class ThreadParticipantRelationalRepository
+  implements ThreadParticipantRepository
+{
   constructor(
     @InjectRepository(ThreadParticipantEntity)
     private readonly ThreadRepository: Repository<ThreadParticipantEntity>,

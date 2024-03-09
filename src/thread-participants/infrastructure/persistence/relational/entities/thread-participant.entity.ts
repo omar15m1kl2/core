@@ -1,5 +1,5 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { ThreadParticipant } from '../../../../domain/thread';
+import { ThreadParticipant } from '../../../../domain/thread-participant';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { MessageEntity } from '../../../../../messages/infrastructure/presistence/entities/message.entity';

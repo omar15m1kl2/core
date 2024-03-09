@@ -10,10 +10,9 @@ import { StatusSeedModule } from './status/status-seed.module';
 import { UserSeedModule } from './user/user-seed.module';
 import { WorkspaceSeedModule } from './workspace/workspace-seed.module';
 import { MessagesSeedModule } from './messages/messages-seed.module';
-
 import { ChannelSeedModule } from './channel/channel-seed.module';
-
 import { ChannelTypeSeedModule } from './channel-type/channel-type-seed.module';
+import { ThreadParticipantSeedModule } from './thread-participant/thread-participant-seed.module';
 
 @Module({
   imports: [
@@ -24,6 +23,7 @@ import { ChannelTypeSeedModule } from './channel-type/channel-type-seed.module';
     StatusSeedModule,
     UserSeedModule,
     WorkspaceSeedModule,
+    ThreadParticipantSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],
