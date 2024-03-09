@@ -12,7 +12,6 @@ import { WorkspaceSeedModule } from './workspace/workspace-seed.module';
 import { MessagesSeedModule } from './messages/messages-seed.module';
 import { ChannelSeedModule } from './channel/channel-seed.module';
 import { ChannelTypeSeedModule } from './channel-type/channel-type-seed.module';
-import { ThreadParticipantSeedModule } from './thread-participant/thread-participant-seed.module';
 
 @Module({
   imports: [
@@ -23,7 +22,6 @@ import { ThreadParticipantSeedModule } from './thread-participant/thread-partici
     StatusSeedModule,
     UserSeedModule,
     WorkspaceSeedModule,
-    ThreadParticipantSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],
