@@ -1,23 +1,27 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Thread } from '../../../../domain/thread';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { ThreadParticipant } from '../../../../domain/thread';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { MessageEntity } from '../../../../../messages/infrastructure/presistence/entities/message.entity';
 
 @Entity({
-  name: 'thread',
+  name: 'thread_participant',
 })
-export class ThreadEntity extends EntityRelationalHelper implements Thread {
-  @PrimaryGeneratedColumn()
-  id: number | string;
+export class ThreadParticipantEntity
+  extends EntityRelationalHelper
+  implements ThreadParticipant
+{
+  @PrimaryColumn()
+  participantId: number;
 
-  @ManyToOne(() => UserEntity, {
-    eager: true,
-  })
-  participants: UserEntity[];
+  @PrimaryColumn()
+  parentMessageId: number;
 
-  @ManyToOne(() => MessageEntity, {
-    eager: true,
-  })
+  @ManyToOne(() => UserEntity)
+  @JoinColumn({ name: 'participantId', referencedColumnName: 'id' })
+  participant: UserEntity;
+
+  @ManyToOne(() => MessageEntity)
+  @JoinColumn({ name: 'parentMessageId', referencedColumnName: 'id' })
   parentMessage: MessageEntity;
 }

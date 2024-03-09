@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ThreadEntity } from 'src/threads/infrastructure/persistence/relational/entities/thread.entity';
+import { ThreadParticipantEntity } from 'src/threads/infrastructure/persistence/relational/entities/thread.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class ThreadSeedService {
   constructor(
-    @InjectRepository(ThreadEntity)
-    private repository: Repository<ThreadEntity>,
+    @InjectRepository(ThreadParticipantEntity)
+    private repository: Repository<ThreadParticipantEntity>,
   ) {}
 
   // TODO - implement the logic

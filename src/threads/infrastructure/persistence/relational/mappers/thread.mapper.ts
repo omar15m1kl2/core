@@ -1,38 +1,25 @@
 import { MessageEntity } from '../../../../../messages/infrastructure/presistence/entities/message.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
-import { Thread } from '../../../../domain/thread';
-import { ThreadEntity } from '../entities/thread.entity';
+import { ThreadParticipant } from '../../../../domain/thread';
+import { ThreadParticipantEntity } from '../entities/thread.entity';
 
 export class ThreadMapper {
-  static toDomain(raw: ThreadEntity): Thread {
-    const thread = new Thread();
+  static toDomain(raw: ThreadParticipantEntity): ThreadParticipant {
+    const thread = new ThreadParticipant();
 
-    thread.id = raw.id;
-    thread.participants = raw.participants;
+    thread.participant = raw.participant;
     thread.parentMessage = raw.parentMessage;
 
     return thread;
   }
 
-  static toPersistence(thread: Thread): ThreadEntity {
-    const participants = thread.participants?.map((member) => {
-      const participant = new UserEntity();
-
-      participant.id = Number(member.id);
-
-      return participant;
-    });
-
+  static toPersistence(thread: ThreadParticipant): ThreadParticipantEntity {
+    const participant = new UserEntity();
+    participant.id = thread.participant.id as number;
     const parentMessage = new MessageEntity();
     parentMessage.id = Number(thread.parentMessage.id);
 
-    const threadEntity = new ThreadEntity();
-    if (thread.id) {
-      threadEntity.id = thread.id;
-    }
-
-    threadEntity.participants = participants;
-    threadEntity.parentMessage = parentMessage;
+    const threadEntity = new ThreadParticipantEntity();
 
     return threadEntity;
   }

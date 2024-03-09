@@ -1,23 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ThreadRepository } from '../threads.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ThreadEntity } from '../entities/thread.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { ThreadParticipantEntity } from '../entities/thread.entity';
+import { Repository } from 'typeorm';
 import { ThreadMapper } from '../mappers/thread.mapper';
-import { User } from '../../../../../users/domain/user';
-import { Thread } from '../../../../domain/thread';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
-import { EntityCondition } from '../../../../../utils/types/entity-condition.type';
-import { NullableType } from '../../../../../utils/types/nullable.type';
+import { ThreadParticipant } from '../../../../domain/thread';
 
 @Injectable()
 export class ThreadRelationalRepository implements ThreadRepository {
   constructor(
-    @InjectRepository(ThreadEntity)
-    private readonly ThreadRepository: Repository<ThreadEntity>,
+    @InjectRepository(ThreadParticipantEntity)
+    private readonly ThreadRepository: Repository<ThreadParticipantEntity>,
   ) {}
 
-  async create(data: Thread): Promise<Thread> {
+  async create(data: ThreadParticipant): Promise<ThreadParticipant> {
     const persistenceModel = ThreadMapper.toPersistence(data);
 
     const newEntity = await this.ThreadRepository.save(
@@ -26,59 +22,4 @@ export class ThreadRelationalRepository implements ThreadRepository {
 
     return ThreadMapper.toDomain(newEntity);
   }
-
-  async findManyWithPagination(
-    userId: User['id'],
-    paginationOptions: IPaginationOptions,
-  ): Promise<Thread[]> {
-    const entities = await this.ThreadRepository.find({
-      where: {
-        participants: {
-          id: userId as number,
-        },
-      },
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-    });
-    return entities.map((thread) => ThreadMapper.toDomain(thread));
-  }
-
-  async findOne(
-    fields: EntityCondition<Thread>,
-  ): Promise<NullableType<Thread>> {
-    const entity = await this.ThreadRepository.findOne({
-      where: fields as FindOptionsWhere<ThreadEntity>,
-    });
-
-    return entity ? ThreadMapper.toDomain(entity) : null;
-  }
-
-  async softDelete(id: Thread['id']): Promise<void> {
-    await this.ThreadRepository.softDelete(id);
-  }
-
-  // TODO - implement the logic
-  // async update(
-  //   ThreadId: Thread['id'],
-  //   payload: UpdateThreadDto,
-  // ): Promise<Thread> {
-  //   const entity = await this.ThreadRepository.findOne({
-  //     where: {
-  //       id: Number(ThreadId),
-  //     },
-  //   });
-
-  //   if (!entity) throw new Error('Thread not found');
-
-  //   const updatedEntity = await this.ThreadRepository.save(
-  //     this.ThreadRepository.create(
-  //       ThreadMapper.toPersistence({
-  //         ...ThreadMapper.toDomain(entity),
-  //         ...payload,
-  //       }),
-  //     ),
-  //   );
-
-  //   return ThreadMapper.toDomain(updatedEntity);
-  // }
 }
