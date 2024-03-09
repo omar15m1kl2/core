@@ -10,6 +10,10 @@ import { ThreadParticipantEntity } from 'src/thread-participants/infrastructure/
 export class MessageSubscriber
   implements EntitySubscriberInterface<MessageEntity>
 {
+  listenTo() {
+    return MessageEntity;
+  }
+
   async afterInsert(event: InsertEvent<MessageEntity>) {
     if (event.entity.parentMessage && event.entity.sender) {
       const threadParticipant = new ThreadParticipantEntity();
