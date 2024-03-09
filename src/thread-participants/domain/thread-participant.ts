@@ -16,4 +16,8 @@ export class ThreadParticipant {
   participant: User;
 
   parentMessage: Message;
+
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
 }
