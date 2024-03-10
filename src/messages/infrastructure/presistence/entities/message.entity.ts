@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -45,4 +46,7 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
 
   @ManyToOne(() => MessageEntity, { nullable: true })
   parentMessage: MessageEntity;
+
+  @ManyToMany(() => UserEntity, (user) => user.parentMessages)
+  participants: UserEntity[];
 }

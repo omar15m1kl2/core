@@ -9,6 +9,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinTable,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -23,6 +24,7 @@ import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entit
 import { User } from '../../../../domain/user';
 import { ChannelEntity } from '../../../../../channels/infrastructure/persistence/entities/channel.entity';
 import { IsDefined } from 'class-validator';
+import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
 
 @Entity({
   name: 'user',
@@ -85,6 +87,20 @@ export class UserEntity extends EntityRelationalHelper implements User {
 
   @ManyToMany(() => ChannelEntity, (channel) => channel.members)
   channels: ChannelEntity[];
+
+  @ManyToMany(() => MessageEntity, (message) => message.participants)
+  @JoinTable({
+    name: 'thread_participants',
+    joinColumn: {
+      name: 'user',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'parent_message',
+      referencedColumnName: 'parentMessageId',
+    },
+  })
+  parentMessages: MessageEntity[];
 
   @ManyToOne(() => FileEntity, {
     eager: true,
