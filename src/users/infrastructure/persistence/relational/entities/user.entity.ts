@@ -92,12 +92,12 @@ export class UserEntity extends EntityRelationalHelper implements User {
   @JoinTable({
     name: 'thread_participants',
     joinColumn: {
-      name: 'user',
+      name: 'participant',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
       name: 'parent_message',
-      referencedColumnName: 'parentMessageId',
+      referencedColumnName: 'parentMessage',
     },
   })
   parentMessages: MessageEntity[];
