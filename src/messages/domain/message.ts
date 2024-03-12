@@ -11,6 +11,6 @@ export class Message {
   updatedAt: Date;
   deletedAt: Date;
   workspace: Workspace;
-  parentMessage: Message;
+  parentMessage?: Message;
   participants: User[];
 }

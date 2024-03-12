@@ -9,7 +9,6 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  JoinTable,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -89,17 +88,6 @@ export class UserEntity extends EntityRelationalHelper implements User {
   channels: ChannelEntity[];
 
   @ManyToMany(() => MessageEntity, (message) => message.participants)
-  @JoinTable({
-    name: 'thread_participants',
-    joinColumn: {
-      name: 'participant',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'parent_message',
-      referencedColumnName: 'parentMessage',
-    },
-  })
   parentMessages: MessageEntity[];
 
   @ManyToOne(() => FileEntity, {
