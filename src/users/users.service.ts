@@ -12,12 +12,15 @@ import { RoleEnum } from 'src/roles/roles.enum';
 import { FilesService } from 'src/files/files.service';
 import bcrypt from 'bcryptjs';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
+import { Message } from '../messages/domain/message';
+import { MessagesService } from '../messages/messages.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly filesService: FilesService,
+    private readonly messagesService: MessagesService,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -134,6 +137,13 @@ export class UsersService {
       sortOptions,
       paginationOptions,
     });
+  }
+
+  async findUserThreadsWithPagination(
+    id: User['id'],
+    query: IPaginationOptions,
+  ): Promise<Message[]> {
+    return this.messagesService.findUserThreadsWithPagination(id, query);
   }
 
   findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
