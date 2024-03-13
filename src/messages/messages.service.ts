@@ -7,6 +7,7 @@ import {
 import { Channel } from 'src/channels/domain/channel';
 import { User } from '../users/domain/user';
 import { Message } from './domain/message';
+import { Workspace } from '../workspaces/domain/workspace';
 
 @Injectable()
 export class MessagesService {
@@ -23,9 +24,14 @@ export class MessagesService {
   }
 
   async findUserThreadsWithPagination(
-    id: User['id'],
+    workspaceId: Workspace['id'],
+    userId: User['id'],
     query: IPaginationOptions,
   ): Promise<Message[]> {
-    return this.messageRepository.findUserThreadsWithPagination(id, query);
+    return this.messageRepository.findUserThreadsWithPagination(
+      workspaceId as number,
+      userId,
+      query,
+    );
   }
 }

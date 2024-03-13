@@ -11,6 +11,7 @@ import {
 } from 'src/utils/types/pagination-options';
 import convertDateToUTC from 'src/utils/convert-timezone';
 import { User } from '../../../../users/domain/user';
+import { Workspace } from '../../../../workspaces/domain/workspace';
 
 @Injectable()
 export class MessageRelationalRepository {
@@ -101,7 +102,8 @@ export class MessageRelationalRepository {
   }
 
   async findUserThreadsWithPagination(
-    id: User['id'],
+    workspaceId: Workspace['id'],
+    userId: User['id'],
     paginationOptions: IPaginationOptions,
   ): Promise<Message[]> {
     const threads = await this.messageRepository
@@ -144,7 +146,8 @@ export class MessageRelationalRepository {
         'workspace.id',
         'workspace.title',
       ])
-      .where('user.id = :id', { id })
+      .where('user.id = :userId', { userId })
+      .andWhere('message.workspaceId = :workspaceId', { workspaceId })
       .orderBy('message.createdAt', 'DESC')
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .take(paginationOptions.limit)

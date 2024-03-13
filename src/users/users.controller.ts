@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiParam, ApiTags, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,8 +25,6 @@ import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
-import { Message } from '../messages/domain/message';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 
 @ApiTags('Users')
 @Controller({
@@ -93,38 +91,6 @@ export class UsersController {
   })
   findOne(@Param('id') id: User['id']): Promise<NullableType<User>> {
     return this.usersService.findOne({ id });
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
-  @Get(':id/threads')
-  @HttpCode(HttpStatus.OK)
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-  })
-  async findThreads(
-    @Param('id') id: User['id'],
-    @Query() query: IPaginationOptions,
-  ): Promise<InfinityPaginationResultType<Message>> {
-    query.page = query.page ?? 1;
-    query.limit = query.limit ?? 20;
-    if (query.limit > 50) {
-      query.limit = 50;
-    }
-    return infinityPagination(
-      await this.usersService.findUserThreadsWithPagination(id, query),
-      { page: query.page, limit: query.limit },
-    );
   }
 
   @SerializeOptions({

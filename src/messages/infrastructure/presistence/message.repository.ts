@@ -17,6 +17,7 @@ export abstract class MessageRepository {
   ): Promise<{ messages: Message[]; nextCursor: number | null }>;
 
   abstract findUserThreadsWithPagination(
+    workspaceId: Channel['id'],
     userId: User['id'],
     query: IPaginationOptions,
   ): Promise<Message[]>;
