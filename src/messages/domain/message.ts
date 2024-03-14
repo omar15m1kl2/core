@@ -5,6 +5,8 @@ import { Workspace } from 'src/workspaces/domain/workspace';
 export class Message {
   id: number | string;
   content: string;
+  hasChilds: boolean;
+  childsCount: number;
   sender: User;
   channel: Channel;
   createdAt: Date;
