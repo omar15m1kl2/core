@@ -7,9 +7,11 @@ import {
   Param,
   Query,
   Post,
+  Request,
+  Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { QueryUserDto } from 'src/users/dto/query-user.dto';
 import { infinityPagination } from 'src/utils/infinity-pagination';
 import { ThreadsService } from './threads.service';
@@ -55,19 +57,23 @@ export class ThreadsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Post(':id/unsubscribe')
+  @Post(':id/subscribe')
   @ApiParam({
     name: 'id',
     description: 'Parent message Id',
   })
-  @ApiQuery({
-    name: 'userId',
-    description: 'User Id',
+  async subscribeThread(@Param('id') id: string, @Request() request) {
+    return this.service.subscribeThread(request.user.id, id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id/unsubscribe')
+  @ApiParam({
+    name: 'id',
+    description: 'Parent message Id',
   })
-  async unsubscribeThread(
-    @Param('id') id: string,
-    @Query('userId') userId: string,
-  ) {
-    return this.service.unsubscribeThread(userId, id);
+  async unsubscribeThread(@Param('id') id: string, @Request() request) {
+    return this.service.unsubscribeThread(request.user.id, id);
   }
 }

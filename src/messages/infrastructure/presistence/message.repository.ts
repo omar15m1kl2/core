@@ -26,4 +26,9 @@ export abstract class MessageRepository {
     userId: User['id'],
     parentMessageId: Message['id'],
   ): Promise<void>;
+
+  abstract subscribeThread(
+    userId: User['id'],
+    parentMessageId: Message['id'],
+  ): Promise<void>;
 }

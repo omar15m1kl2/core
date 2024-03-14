@@ -169,4 +169,13 @@ export class MessageRelationalRepository {
       .andWhere('parentMessageId = :parentMessageId', { parentMessageId })
       .execute();
   }
+
+  async subscribeThread(userId: User['id'], parentMessageId: Message['id']) {
+    await this.messageRepository
+      .createQueryBuilder()
+      .insert()
+      .into('thread_participants_user')
+      .values({ participantId: userId, parentMessageId })
+      .execute();
+  }
 }

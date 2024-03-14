@@ -31,4 +31,8 @@ export class ThreadsService {
   unsubscribeThread(userId: User['id'], parentMessageId: string) {
     return this.messageService.unsubscribeThread(userId, parentMessageId);
   }
+
+  subscribeThread(userId: User['id'], parentMessageId: string) {
+    return this.messageService.subscribeThread(userId, parentMessageId);
+  }
 }
