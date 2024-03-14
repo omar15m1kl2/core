@@ -13,6 +13,8 @@ export class MessageMapper {
     message.id = raw.id;
     message.content = raw.content;
     message.createdAt = raw.createdAt;
+    message.hasChilds = raw.hasChilds;
+    message.childsCount = raw.childsCount;
     message.updatedAt = raw.updatedAt;
     message.deletedAt = raw.deletedAt;
     message.sender = UserMapper.toDomain(raw.sender);
@@ -29,6 +31,8 @@ export class MessageMapper {
     const messageEntity = new MessageEntity();
     messageEntity.id = message.id as number;
     messageEntity.content = message.content;
+    messageEntity.hasChilds = message.hasChilds;
+    messageEntity.childsCount = message.childsCount;
     messageEntity.createdAt = message.createdAt;
     messageEntity.updatedAt = message.updatedAt;
     messageEntity.deletedAt = message.deletedAt;

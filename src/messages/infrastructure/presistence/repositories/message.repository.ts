@@ -137,6 +137,8 @@ export class MessageRelationalRepository {
         'message.id',
         'message.content',
         'message.createdAt',
+        'message.hasChilds',
+        'message.childsCount',
         'sender.id',
         'sender.firstName',
         'sender.lastName',
