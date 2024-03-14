@@ -28,6 +28,16 @@ export class MessageSubscriber
         ])
         .orIgnore()
         .execute();
+
+      await event.manager
+        .createQueryBuilder()
+        .update(MessageEntity)
+        .set({
+          hasChilds: true,
+          childsCount: () => 'childsCount + 1',
+        })
+        .where('id = :id', { id: event.entity.parentMessage.id })
+        .execute();
     }
   }
 }
