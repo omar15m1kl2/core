@@ -3,6 +3,7 @@ import { WorkspacesController } from './workspaces.controller';
 import { WorkspacesService } from './workspaces.service';
 import { UsersService } from '../users/users.service';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
+import { MessagesService } from 'src/messages/messages.service';
 
 describe('WorkspacesController', () => {
   let controller: WorkspacesController;
@@ -18,6 +19,10 @@ describe('WorkspacesController', () => {
         },
         {
           provide: UsersService,
+          useValue: {},
+        },
+        {
+          provide: MessagesService,
           useValue: {},
         },
       ],

@@ -3,6 +3,7 @@ import { WorkspacesService } from './workspaces.service';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { WorkspaceRelationalRepository } from './infrastructure/persistence/repositories/workspace.repository';
 import { UsersService } from '../users/users.service';
+import { MessagesService } from '../messages/messages.service';
 
 describe('WorkspacesService', () => {
   let service: WorkspacesService;
@@ -17,6 +18,10 @@ describe('WorkspacesService', () => {
         },
         {
           provide: UsersService,
+          useValue: {},
+        },
+        {
+          provide: MessagesService,
           useValue: {},
         },
       ],
