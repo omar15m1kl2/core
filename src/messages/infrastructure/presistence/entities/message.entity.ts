@@ -25,9 +25,6 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   @Column({ type: String })
   content: string;
 
-  @Column({ default: false })
-  hasChilds: boolean;
-
   @Column({ default: 0 })
   childsCount: number;
 
