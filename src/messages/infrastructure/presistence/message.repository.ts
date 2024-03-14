@@ -21,4 +21,9 @@ export abstract class MessageRepository {
     userId: User['id'],
     query: IPaginationOptions,
   ): Promise<Message[]>;
+
+  abstract unsubscribeThread(
+    userId: User['id'],
+    parentMessageId: Message['id'],
+  ): Promise<void>;
 }

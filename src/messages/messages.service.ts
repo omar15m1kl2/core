@@ -34,4 +34,8 @@ export class MessagesService {
       query,
     );
   }
+
+  async unsubscribeThread(userId: User['id'], parentMessageId: Message['id']) {
+    return this.messageRepository.unsubscribeThread(userId, parentMessageId);
+  }
 }

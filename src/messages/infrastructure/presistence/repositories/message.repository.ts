@@ -159,4 +159,14 @@ export class MessageRelationalRepository {
 
     return threads.map((thread) => MessageMapper.toDomain(thread));
   }
+
+  async unsubscribeThread(userId: User['id'], parentMessageId: Message['id']) {
+    await this.messageRepository
+      .createQueryBuilder()
+      .delete()
+      .from('thread_participants_user')
+      .where('participantId = :userId', { userId })
+      .andWhere('parentMessageId = :parentMessageId', { parentMessageId })
+      .execute();
+  }
 }
