@@ -3,6 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { IsDefined } from 'class-validator';
 import { Channel } from 'src/channels/domain/channel';
 import { FileType } from 'src/files/domain/file';
+import { Message } from 'src/messages/domain/message';
 import { Role } from 'src/roles/domain/role';
 import { Status } from 'src/statuses/domain/status';
 import { Workspace } from 'src/workspaces/domain/workspace';
@@ -36,6 +37,7 @@ export class User {
   role?: Role | null;
   status?: Status;
   workspaces: Workspace[];
+  parentMessages: Message[];
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

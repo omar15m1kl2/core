@@ -23,6 +23,7 @@ import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entit
 import { User } from '../../../../domain/user';
 import { ChannelEntity } from '../../../../../channels/infrastructure/persistence/entities/channel.entity';
 import { IsDefined } from 'class-validator';
+import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
 
 @Entity({
   name: 'user',
@@ -85,6 +86,9 @@ export class UserEntity extends EntityRelationalHelper implements User {
 
   @ManyToMany(() => ChannelEntity, (channel) => channel.members)
   channels: ChannelEntity[];
+
+  @ManyToMany(() => MessageEntity, (message) => message.participants)
+  parentMessages: MessageEntity[];
 
   @ManyToOne(() => FileEntity, {
     eager: true,
