@@ -26,7 +26,7 @@ export class MessagesSeedService {
 
     const count = await this.messageRepository.count();
 
-    if (count < 3 && user && workspace && channel) {
+    if (count < 4 && user && workspace && channel) {
       await this.messageRepository.save([
         this.messageRepository.create({
           content: 'Hello World',
@@ -57,6 +57,15 @@ export class MessagesSeedService {
           workspace: workspace,
           channel: channel,
           parentMessage: message,
+        }),
+      ]);
+      await this.messageRepository.save([
+        this.messageRepository.create({
+          content: 'Draft Message',
+          sender: user,
+          workspace: workspace,
+          channel: channel,
+          draft: true,
         }),
       ]);
     }

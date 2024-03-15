@@ -86,6 +86,7 @@ export class MessageRelationalRepository {
           .replace('T', ' '),
       })
       .andWhere('message.parentMessageId IS NULL')
+      .andWhere('message.draft = false')
       .orderBy('message.createdAt', 'DESC')
       .take(paginationOptions.limit + 1)
       .getMany();
