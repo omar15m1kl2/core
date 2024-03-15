@@ -27,6 +27,8 @@ export abstract class MessageRepository {
     userId: User['id'],
   ): Promise<Message | null>;
 
+  abstract removeDraft(id: Message['id']): Promise<void>;
+
   abstract unsubscribeThread(
     userId: User['id'],
     parentMessageId: Message['id'],

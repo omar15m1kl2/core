@@ -200,19 +200,18 @@ export class MessageRelationalRepository {
       .andWhere('message.senderId = :userId', { userId })
       .andWhere('message.draft = true')
       .getOne();
-    // const message = await this.messageRepository.findOne({
-    //   where: {
-    //     channel: { id: channelId as number },
-    //     sender: { id: userId as number },
-    //     draft: true,
-    //   },
-    //   relations: ['sender', 'channel', 'workspace'],
-    // });
 
     if (!message) {
       return null;
     }
+
+    await this.removeDraft(message);
+
     return MessageMapper.toDomain(message);
+  }
+
+  async removeDraft(message: MessageEntity): Promise<void> {
+    await this.messageRepository.remove(message);
   }
 
   async unsubscribeThread(userId: User['id'], parentMessageId: Message['id']) {
