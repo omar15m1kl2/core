@@ -162,6 +162,59 @@ export class MessageRelationalRepository {
     return threads.map((thread) => MessageMapper.toDomain(thread));
   }
 
+  async getChannelDraftMessage(
+    channelId: Channel['id'],
+    userId: User['id'],
+  ): Promise<Message | null> {
+    const message = await this.messageRepository
+      .createQueryBuilder('message')
+      .leftJoinAndSelect(
+        'message.sender',
+        'sender',
+        'sender.id = message.senderId',
+      )
+      .leftJoinAndSelect(
+        'message.channel',
+        'channel',
+        'channel.id = message.channelId',
+      )
+      .leftJoinAndSelect(
+        'message.workspace',
+        'workspace',
+        'workspace.id = message.workspaceId',
+      )
+      .select([
+        'message.id',
+        'message.content',
+        'message.createdAt',
+        'sender.id',
+        'sender.firstName',
+        'sender.lastName',
+        'sender.username',
+        'channel.id',
+        'channel.title',
+        'workspace.id',
+        'workspace.title',
+      ])
+      .where('message.channelId = :channelId', { channelId })
+      .andWhere('message.senderId = :userId', { userId })
+      .andWhere('message.draft = true')
+      .getOne();
+    // const message = await this.messageRepository.findOne({
+    //   where: {
+    //     channel: { id: channelId as number },
+    //     sender: { id: userId as number },
+    //     draft: true,
+    //   },
+    //   relations: ['sender', 'channel', 'workspace'],
+    // });
+
+    if (!message) {
+      return null;
+    }
+    return MessageMapper.toDomain(message);
+  }
+
   async unsubscribeThread(userId: User['id'], parentMessageId: Message['id']) {
     await this.messageRepository
       .createQueryBuilder()

@@ -10,12 +10,15 @@ import { Channel } from './domain/channel';
 import { FilterUserDto, SortUserDto } from '../users/dto/query-user.dto';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { UsersService } from '../users/users.service';
+import { Message } from '../messages/domain/message';
+import { MessagesService } from '../messages/messages.service';
 
 @Injectable()
 export class ChannelsService {
   constructor(
     private readonly channelRepostory: ChannelRepository,
     private readonly userService: UsersService,
+    private readonly messagesService: MessagesService,
   ) {}
 
   async createChannel(user: User, createChannelDto: CreateChannelDto) {
@@ -76,6 +79,13 @@ export class ChannelsService {
       sortOptions,
       paginationOptions,
     });
+  }
+
+  async getChannelDraftMessage(
+    channelId: Channel['id'],
+    userId: User['id'],
+  ): Promise<Message | null> {
+    return this.messagesService.getChannelDraftMessage(channelId, userId);
   }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {

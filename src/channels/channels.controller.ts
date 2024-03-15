@@ -90,7 +90,6 @@ export class ChannelsController {
   @HttpCode(HttpStatus.OK)
   getChannelMessages(
     @Param('id') id: Channel['id'],
-    @Request() request,
     @Query() query: ICursorPaginationOptions,
   ) {
     query.cursor = query.cursor ?? new Date();
@@ -99,6 +98,20 @@ export class ChannelsController {
       query.limit = 100;
     }
     return this.messageService.getMessagesWithCursorPagination(id, query);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/draft')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.OK)
+  getChannelDraft(@Param('id') channelId: Channel['id'], @Request() request) {
+    return this.channelsService.getChannelDraftMessage(
+      channelId,
+      request.user.id,
+    );
   }
 
   @ApiBearerAuth()

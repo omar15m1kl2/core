@@ -22,6 +22,11 @@ export abstract class MessageRepository {
     query: IPaginationOptions,
   ): Promise<Message[]>;
 
+  abstract getChannelDraftMessage(
+    channelId: Channel['id'],
+    userId: User['id'],
+  ): Promise<Message | null>;
+
   abstract unsubscribeThread(
     userId: User['id'],
     parentMessageId: Message['id'],

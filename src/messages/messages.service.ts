@@ -35,6 +35,13 @@ export class MessagesService {
     );
   }
 
+  async getChannelDraftMessage(
+    channelId: Channel['id'],
+    userId: User['id'],
+  ): Promise<Message | null> {
+    return this.messageRepository.getChannelDraftMessage(channelId, userId);
+  }
+
   async unsubscribeThread(userId: User['id'], parentMessageId: Message['id']) {
     return this.messageRepository.unsubscribeThread(userId, parentMessageId);
   }
