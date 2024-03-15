@@ -14,4 +14,5 @@ export class Message {
   workspace: Workspace;
   parentMessage?: Message;
   participants: User[];
+  draft: boolean;
 }

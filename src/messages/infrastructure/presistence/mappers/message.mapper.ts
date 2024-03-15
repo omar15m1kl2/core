@@ -14,6 +14,7 @@ export class MessageMapper {
     message.content = raw.content;
     message.createdAt = raw.createdAt;
     message.childsCount = raw.childsCount;
+    message.draft = raw.draft;
     message.updatedAt = raw.updatedAt;
     message.deletedAt = raw.deletedAt;
     message.sender = UserMapper.toDomain(raw.sender);
@@ -31,6 +32,7 @@ export class MessageMapper {
     messageEntity.id = message.id as number;
     messageEntity.content = message.content;
     messageEntity.childsCount = message.childsCount;
+    messageEntity.draft = message.draft;
     messageEntity.createdAt = message.createdAt;
     messageEntity.updatedAt = message.updatedAt;
     messageEntity.deletedAt = message.deletedAt;
