@@ -2,6 +2,7 @@ import {
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
+  RemoveEvent,
 } from 'typeorm';
 
 import { MessageEntity } from '../entities/message.entity';
@@ -28,6 +29,36 @@ export class MessageSubscriber
         ])
         .orIgnore()
         .execute();
+
+      await event.manager
+        .createQueryBuilder()
+        .update(MessageEntity)
+        .set({
+          childsCount: () => 'childsCount + 1',
+        })
+        .where('id = :id', { id: event.entity.parentMessage.id })
+        .execute();
+    }
+  }
+
+  async afterSoftRemove(event: RemoveEvent<MessageEntity>) {
+    if (event.entity?.parentMessage) {
+      const parentMessage = await event.manager
+        .getRepository(MessageEntity)
+        .findOne({
+          where: { id: event.entity.parentMessage.id },
+        });
+
+      if (parentMessage && parentMessage.childsCount > 0) {
+        await event.manager
+          .createQueryBuilder()
+          .update(MessageEntity)
+          .set({
+            childsCount: () => '"childsCount" - 1',
+          })
+          .where('id = :id', { id: event.entity.parentMessage.id })
+          .execute();
+      }
     }
   }
 }
