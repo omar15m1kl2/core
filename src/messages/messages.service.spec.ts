@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MessagesService } from './messages.service';
-import { MessageRelationalRepository } from './infrastructure/presistence/repositories/message.repository';
-import { MessageRepository } from './infrastructure/presistence/message.repository';
+import { MessageRelationalRepository } from './infrastructure/persistence/repositories/message.repository';
+import { MessageRepository } from './infrastructure/persistence/message.repository';
 
 describe('MessagesService', () => {
   let service: MessagesService;

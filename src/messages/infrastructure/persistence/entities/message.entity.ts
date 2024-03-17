@@ -28,6 +28,9 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   @Column({ default: 0 })
   childsCount: number;
 
+  @Column({ default: false })
+  draft: boolean;
+
   @ManyToOne(() => UserEntity, {
     eager: true,
   })

@@ -3,6 +3,7 @@ import { ChannelsService } from './channels.service';
 import { ChannelRepository } from './infrastructure/persistence/channel.repository';
 import { ChannelRelationalRepository } from './infrastructure/persistence/repositories/channel.repository';
 import { UsersService } from '../users/users.service';
+import { MessagesService } from '../messages/messages.service';
 
 describe('ChannelsService', () => {
   let service: ChannelsService;
@@ -17,6 +18,10 @@ describe('ChannelsService', () => {
         },
         {
           provide: UsersService,
+          useValue: {},
+        },
+        {
+          provide: MessagesService,
           useValue: {},
         },
       ],

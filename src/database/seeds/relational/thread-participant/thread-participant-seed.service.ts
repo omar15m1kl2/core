@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { Repository } from 'typeorm';
-import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
+import { MessageEntity } from 'src/messages/infrastructure/persistence/entities/message.entity';
 
 @Injectable()
 export class ThreadSeedService {
