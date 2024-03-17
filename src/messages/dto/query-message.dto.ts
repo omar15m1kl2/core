@@ -38,6 +38,9 @@ export class SortMessageDto {
 export class QueryMessageDto {
   @ApiProperty({
     required: false,
+    description:
+      'Message id to start from. Leave empty to use the latest message in the given channel.',
+    example: 1,
   })
   @Transform(({ value }) => Number(value))
   @IsNumber()
@@ -52,7 +55,13 @@ export class QueryMessageDto {
   @IsOptional()
   limit: number;
 
-  @ApiProperty({ type: String, required: false, example: '{"draft":true}' })
+  @ApiProperty({
+    type: String,
+    required: false,
+    example: '{"draft": false, "workspaceId":1, "parentMessageId":4}',
+    default: '{draft: false, "parentMessageId": null, "workspaceId": null}',
+    description: 'Leave empty to use default filter.',
+  })
   @IsOptional()
   @Transform(({ value }) =>
     value ? plainToInstance(FilterMessageDto, JSON.parse(value)) : undefined,
@@ -61,7 +70,14 @@ export class QueryMessageDto {
   @Type(() => FilterMessageDto)
   filters?: FilterMessageDto | null;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({
+    type: String,
+    required: false,
+    example: '[{"orderBy": "id", "order":"ASC"}]',
+    default: '[{"orderBy": "createdAt", "order":"DESC"}]',
+    description:
+      'orderBy: id, createdAt, updatedAt, etc. Leave empty to use createdAt, order: DESC.',
+  })
   @IsOptional()
   @Transform(({ value }) => {
     return value
