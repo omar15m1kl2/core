@@ -88,13 +88,6 @@ export class ChannelsService {
     });
   }
 
-  async getChannelDraftMessage(
-    channelId: Channel['id'],
-    userId: User['id'],
-  ): Promise<Message | null> {
-    return this.messagesService.getChannelDraftMessage(channelId, userId);
-  }
-
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {

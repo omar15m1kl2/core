@@ -99,20 +99,6 @@ export class ChannelsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Get(':id/draft')
-  @ApiParam({
-    name: 'id',
-  })
-  @HttpCode(HttpStatus.OK)
-  getChannelDraft(@Param('id') channelId: Channel['id'], @Request() request) {
-    return this.channelsService.getChannelDraftMessage(
-      channelId,
-      request.user.id,
-    );
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Get(':id/users')
   @ApiParam({
     name: 'id',

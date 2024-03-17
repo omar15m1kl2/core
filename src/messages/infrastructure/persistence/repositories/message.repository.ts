@@ -5,16 +5,21 @@ import { Repository } from 'typeorm';
 import { MessageMapper } from '../mappers/message.mapper';
 import { Message } from 'src/messages/domain/message';
 import { Channel } from 'src/channels/domain/channel';
-import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
+import {
+  ICursorPaginationOptions,
+  IPaginationOptions,
+} from 'src/utils/types/pagination-options';
 import convertDateToUTC from 'src/utils/convert-timezone';
 import { User } from '../../../../users/domain/user';
 import {
   FilterMessageDto,
   SortMessageDto,
 } from 'src/messages/dto/query-message.dto';
+import { Workspace } from 'src/workspaces/domain/workspace';
+import { MessageRepository } from '../message.repository';
 
 @Injectable()
-export class MessageRelationalRepository {
+export class MessageRelationalRepository implements MessageRepository {
   constructor(
     @InjectRepository(MessageEntity)
     private readonly messageRepository: Repository<MessageEntity>,
@@ -148,21 +153,32 @@ export class MessageRelationalRepository {
     };
   }
 
-  async getChannelDraftMessage(
-    channelId: Channel['id'],
+  async findUserThreadsWithPagination(
+    workspaceId: Workspace['id'],
     userId: User['id'],
-  ): Promise<Message | null> {
-    const message = await this.messageRepository
+    paginationOptions: IPaginationOptions,
+  ): Promise<Message[]> {
+    const threads = await this.messageRepository
       .createQueryBuilder('message')
       .leftJoinAndSelect(
-        'message.sender',
-        'sender',
-        'sender.id = message.senderId',
+        'thread_participants_user',
+        'thread_participants_user',
+        'message.id = thread_participants_user.parentMessageId',
+      )
+      .leftJoinAndSelect(
+        'user',
+        'user',
+        'thread_participants_user.participantId = user.id',
       )
       .leftJoinAndSelect(
         'message.channel',
         'channel',
         'channel.id = message.channelId',
+      )
+      .leftJoinAndSelect(
+        'message.sender',
+        'sender',
+        'sender.id = message.senderId',
       )
       .leftJoinAndSelect(
         'message.workspace',
@@ -173,6 +189,7 @@ export class MessageRelationalRepository {
         'message.id',
         'message.content',
         'message.createdAt',
+        'message.childsCount',
         'sender.id',
         'sender.firstName',
         'sender.lastName',
@@ -182,22 +199,18 @@ export class MessageRelationalRepository {
         'workspace.id',
         'workspace.title',
       ])
-      .where('message.channelId = :channelId', { channelId })
-      .andWhere('message.senderId = :userId', { userId })
-      .andWhere('message.draft = true')
-      .getOne();
+      .where('user.id = :userId', { userId })
+      .andWhere('message.workspaceId = :workspaceId', { workspaceId })
+      .orderBy('message.createdAt', 'DESC')
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit)
+      .getMany();
 
-    if (!message) {
-      return null;
+    if (!threads) {
+      throw new Error('Threads not found');
     }
 
-    await this.removeDraft(message);
-
-    return MessageMapper.toDomain(message);
-  }
-
-  async removeDraft(message: MessageEntity): Promise<void> {
-    await this.messageRepository.remove(message);
+    return threads.map((thread) => MessageMapper.toDomain(thread));
   }
 
   async unsubscribeThread(userId: User['id'], parentMessageId: Message['id']) {
