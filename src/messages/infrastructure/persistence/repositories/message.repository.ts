@@ -124,12 +124,6 @@ export class MessageRelationalRepository {
       query = query.andWhere('message.parentMessageId IS NULL');
     }
 
-    if (filterOptions?.workspaceId) {
-      query = query.andWhere('message.workspaceId = :workspaceId', {
-        workspaceId: filterOptions.workspaceId,
-      });
-    }
-
     if (sortOptions) {
       sortOptions.forEach((sortOption) => {
         query = query.addOrderBy(

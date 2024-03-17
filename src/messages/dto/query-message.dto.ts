@@ -7,14 +7,8 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { Message } from '../domain/message';
-import { Workspace } from '../../workspaces/domain/workspace';
 
 export class FilterMessageDto {
-  @ApiProperty()
-  @IsOptional()
-  @Type(() => Workspace['id'])
-  workspaceId?: Workspace['id'] | null;
-
   @ApiProperty()
   @IsOptional()
   @Type(() => Message['id'])
@@ -58,8 +52,8 @@ export class QueryMessageDto {
   @ApiProperty({
     type: String,
     required: false,
-    example: '{"draft": false, "workspaceId":1, "parentMessageId":4}',
-    default: '{draft: false, "parentMessageId": null, "workspaceId": null}',
+    example: '{"draft": false, "parentMessageId":4}',
+    default: '{draft: false, "parentMessageId": null}',
     description: 'Leave empty to use default filter.',
   })
   @IsOptional()
