@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MessageRepository } from './infrastructure/presistence/message.repository';
+import { MessageRepository } from './infrastructure/persistence/message.repository';
 import {
   ICursorPaginationOptions,
   IPaginationOptions,
@@ -8,19 +8,29 @@ import { Channel } from 'src/channels/domain/channel';
 import { User } from '../users/domain/user';
 import { Message } from './domain/message';
 import { Workspace } from '../workspaces/domain/workspace';
+import { FilterMessageDto, SortMessageDto } from './dto/query-message.dto';
 
 @Injectable()
 export class MessagesService {
   constructor(private readonly messageRepository: MessageRepository) {}
 
-  async getMessagesWithCursorPagination(
-    channelId: Channel['id'],
-    paginationOptions: ICursorPaginationOptions,
-  ) {
-    return await this.messageRepository.findMessagesWithCursorPagination(
+  async getMessagesWithCursorPagination({
+    channelId,
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    channelId: Channel['id'];
+    filterOptions?: FilterMessageDto | null;
+    sortOptions?: SortMessageDto[] | null;
+    paginationOptions: ICursorPaginationOptions;
+  }): Promise<{ messages: Message[]; nextCursor: number | null }> {
+    return await this.messageRepository.findMessagesWithCursorPagination({
       channelId,
+      filterOptions,
+      sortOptions,
       paginationOptions,
-    );
+    });
   }
 
   async findUserThreadsWithPagination(

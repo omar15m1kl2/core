@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MessageEntity } from '../../../../messages/infrastructure/presistence/entities/message.entity';
+import { MessageEntity } from '../../../../messages/infrastructure/persistence/entities/message.entity';
 import { Repository } from 'typeorm';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThreadSeedService } from './thread-participant-seed.service';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
-import { MessageEntity } from 'src/messages/infrastructure/presistence/entities/message.entity';
+import { MessageEntity } from 'src/messages/infrastructure/persistence/entities/message.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, MessageEntity])],
