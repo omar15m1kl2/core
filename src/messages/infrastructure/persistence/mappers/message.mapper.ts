@@ -20,9 +20,6 @@ export class MessageMapper {
     message.sender = UserMapper.toDomain(raw.sender);
     message.channel = ChannelMapper.toDomain(raw.channel);
     message.workspace = WorkspaceMapper.toDomain(raw.workspace);
-    if (raw.parentMessage) {
-      message.parentMessage = MessageMapper.toDomain(raw.parentMessage);
-    }
 
     return message;
   }

@@ -5,13 +5,13 @@ import { Repository } from 'typeorm';
 import { MessageMapper } from '../mappers/message.mapper';
 import { Message } from 'src/messages/domain/message';
 import { Channel } from 'src/channels/domain/channel';
-import {
-  ICursorPaginationOptions,
-  IPaginationOptions,
-} from 'src/utils/types/pagination-options';
+import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
 import convertDateToUTC from 'src/utils/convert-timezone';
 import { User } from '../../../../users/domain/user';
-import { Workspace } from '../../../../workspaces/domain/workspace';
+import {
+  FilterMessageDto,
+  SortMessageDto,
+} from 'src/messages/dto/query-message.dto';
 
 @Injectable()
 export class MessageRelationalRepository {
@@ -28,21 +28,43 @@ export class MessageRelationalRepository {
     return MessageMapper.toDomain(newEntity);
   }
 
-  async findMessagesWithCursorPagination(
-    channelId: Channel['id'],
-    paginationOptions: ICursorPaginationOptions,
-  ): Promise<{ messages: Message[]; nextCursor: number | null }> {
-    const message = await this.messageRepository.findOne({
-      where: {
-        id: paginationOptions.cursor,
-      },
-    });
+  async findMessagesWithCursorPagination({
+    channelId,
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    channelId: Channel['id'];
+    filterOptions?: FilterMessageDto | null;
+    sortOptions?: SortMessageDto[] | null;
+    paginationOptions: ICursorPaginationOptions;
+  }): Promise<{ messages: Message[]; nextCursor: number | null }> {
+    let message: MessageEntity | null;
+
+    if (paginationOptions.cursor) {
+      message = await this.messageRepository.findOne({
+        where: {
+          id: paginationOptions.cursor,
+        },
+      });
+    } else {
+      message = await this.messageRepository.findOne({
+        where: {
+          channel: {
+            id: channelId,
+          },
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+    }
 
     if (!message) {
       throw new Error('Message not found');
     }
 
-    const messages = await this.messageRepository
+    let query = this.messageRepository
       .createQueryBuilder('message')
       .leftJoinAndSelect(
         'message.sender',
@@ -84,12 +106,42 @@ export class MessageRelationalRepository {
           .toISOString()
           .slice(0, 19)
           .replace('T', ' '),
-      })
-      .andWhere('message.parentMessageId IS NULL')
-      .andWhere('message.draft = false')
-      .orderBy('message.createdAt', 'DESC')
-      .take(paginationOptions.limit + 1)
-      .getMany();
+      });
+
+    if (filterOptions?.draft !== undefined) {
+      query = query.andWhere('message.draft = :draft', {
+        draft: filterOptions.draft,
+      });
+    } else {
+      query = query.andWhere('message.draft = false');
+    }
+
+    if (filterOptions?.parentMessageId) {
+      query = query.andWhere('message.parentMessageId = :parentMessageId', {
+        parentMessageId: filterOptions.parentMessageId,
+      });
+    } else {
+      query = query.andWhere('message.parentMessageId IS NULL');
+    }
+
+    if (filterOptions?.workspaceId) {
+      query = query.andWhere('message.workspaceId = :workspaceId', {
+        workspaceId: filterOptions.workspaceId,
+      });
+    }
+
+    if (sortOptions) {
+      sortOptions.forEach((sortOption) => {
+        query = query.addOrderBy(
+          `message.${sortOption.orderBy}`,
+          sortOption.order.toUpperCase() as 'ASC' | 'DESC',
+        );
+      });
+    } else {
+      query = query.orderBy('message.createdAt', 'DESC');
+    }
+
+    const messages = await query.take(paginationOptions.limit + 1).getMany();
 
     let nextCursor: number | null = null;
     if (messages.length > paginationOptions.limit) {
@@ -100,66 +152,6 @@ export class MessageRelationalRepository {
       messages: messages.map((message) => MessageMapper.toDomain(message)),
       nextCursor,
     };
-  }
-
-  async findUserThreadsWithPagination(
-    workspaceId: Workspace['id'],
-    userId: User['id'],
-    paginationOptions: IPaginationOptions,
-  ): Promise<Message[]> {
-    const threads = await this.messageRepository
-      .createQueryBuilder('message')
-      .leftJoinAndSelect(
-        'thread_participants_user',
-        'thread_participants_user',
-        'message.id = thread_participants_user.parentMessageId',
-      )
-      .leftJoinAndSelect(
-        'user',
-        'user',
-        'thread_participants_user.participantId = user.id',
-      )
-      .leftJoinAndSelect(
-        'message.channel',
-        'channel',
-        'channel.id = message.channelId',
-      )
-      .leftJoinAndSelect(
-        'message.sender',
-        'sender',
-        'sender.id = message.senderId',
-      )
-      .leftJoinAndSelect(
-        'message.workspace',
-        'workspace',
-        'workspace.id = message.workspaceId',
-      )
-      .select([
-        'message.id',
-        'message.content',
-        'message.createdAt',
-        'message.childsCount',
-        'sender.id',
-        'sender.firstName',
-        'sender.lastName',
-        'sender.username',
-        'channel.id',
-        'channel.title',
-        'workspace.id',
-        'workspace.title',
-      ])
-      .where('user.id = :userId', { userId })
-      .andWhere('message.workspaceId = :workspaceId', { workspaceId })
-      .orderBy('message.createdAt', 'DESC')
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .take(paginationOptions.limit)
-      .getMany();
-
-    if (!threads) {
-      throw new Error('Threads not found');
-    }
-
-    return threads.map((thread) => MessageMapper.toDomain(thread));
   }
 
   async getChannelDraftMessage(
