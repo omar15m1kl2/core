@@ -8,10 +8,17 @@ import { User } from 'src/users/domain/user';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { Channel } from './domain/channel';
 import { FilterUserDto, SortUserDto } from '../users/dto/query-user.dto';
-import { IPaginationOptions } from '../utils/types/pagination-options';
+import {
+  ICursorPaginationOptions,
+  IPaginationOptions,
+} from '../utils/types/pagination-options';
 import { UsersService } from '../users/users.service';
 import { Message } from '../messages/domain/message';
 import { MessagesService } from '../messages/messages.service';
+import {
+  FilterMessageDto,
+  SortMessageDto,
+} from 'src/messages/dto/query-message.dto';
 
 @Injectable()
 export class ChannelsService {
@@ -99,5 +106,24 @@ export class ChannelsService {
     }
 
     await this.channelRepostory.softDelete(id);
+  }
+
+  getMessagesWithCursorPagination({
+    channelId,
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    channelId: Channel['id'];
+    filterOptions?: FilterMessageDto | null;
+    sortOptions?: SortMessageDto[] | null;
+    paginationOptions: ICursorPaginationOptions;
+  }): Promise<{ messages: Message[]; nextCursor: number | null }> {
+    return this.messagesService.getMessagesWithCursorPagination({
+      channelId,
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
   }
 }

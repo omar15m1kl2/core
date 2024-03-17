@@ -14,14 +14,14 @@ import {
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
-import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Channel } from './domain/channel';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { ICursorPaginationOptions } from 'src/utils/types/pagination-options';
 import { MessagesService } from 'src/messages/messages.service';
 import { QueryUserDto } from '../users/dto/query-user.dto';
 import { infinityPagination } from '../utils/infinity-pagination';
+import { QueryMessageDto } from 'src/messages/dto/query-message.dto';
 
 @ApiTags('Channels')
 @Controller({
@@ -77,27 +77,24 @@ export class ChannelsController {
   @ApiParam({
     name: 'id',
   })
-  @ApiQuery({
-    name: 'cursor',
-    required: false,
-    example: 1,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    example: 20,
-  })
   @HttpCode(HttpStatus.OK)
   getChannelMessages(
     @Param('id') id: Channel['id'],
-    @Query() query: ICursorPaginationOptions,
+    @Query() query: QueryMessageDto,
   ) {
-    query.cursor = query.cursor ?? new Date();
     query.limit = query.limit ?? 20;
     if (query.limit > 100) {
       query.limit = 100;
     }
-    return this.messageService.getMessagesWithCursorPagination(id, query);
+    return this.channelsService.getMessagesWithCursorPagination({
+      channelId: id,
+      filterOptions: query.filters,
+      sortOptions: query.sort,
+      paginationOptions: {
+        cursor: query.cursor,
+        limit: query.limit,
+      },
+    });
   }
 
   @ApiBearerAuth()
