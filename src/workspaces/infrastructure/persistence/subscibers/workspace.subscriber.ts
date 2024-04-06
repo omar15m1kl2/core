@@ -17,7 +17,8 @@ export class MessageSubscriber
   async afterInsert(event: InsertEvent<WorkspaceEntity>) {
     const channal = {
       title: 'general',
-      description: 'This is a general channal',
+      description:
+        'This is the one channel that will always include everyone. It’s a great spot for announcements and team-wide conversations.',
       owner: event.entity.owner,
       members: event.entity.members,
       workspace: event.entity,
