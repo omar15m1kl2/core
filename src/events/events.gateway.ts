@@ -11,7 +11,12 @@ import { SocketAuthMiddleware } from 'src/auth/ws-jwt-auth/ws-jwt.middleware';
 import { AllConfigType } from 'src/config/config.type';
 import { Socket } from 'socket.io';
 
-@WebSocketGateway({ namespace: 'events' })
+@WebSocketGateway({
+  namespace: 'events',
+  cors: {
+    origin: '*',
+  },
+})
 @UseGuards(WsJwtAuthGuard)
 @Injectable()
 export class EventsGateway {
