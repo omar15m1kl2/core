@@ -67,6 +67,17 @@ export class WorkspacesController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @Get(':id')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.OK)
+  getWorkspace(@Param('id') id: Workspace['id']) {
+    return this.service.getWorkspace(id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id/users')
   @ApiParam({
     name: 'id',

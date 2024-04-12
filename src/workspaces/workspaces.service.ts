@@ -32,6 +32,10 @@ export class WorkspacesService {
     );
   }
 
+  async getWorkspace(id: Workspace['id']) {
+    return this.workspaceRepository.findOne({ id });
+  }
+
   async createWorkspace(user: User, createWorkspaceDto: CreateWorkspaceDto) {
     const clonedPayload = {
       owner: user,
