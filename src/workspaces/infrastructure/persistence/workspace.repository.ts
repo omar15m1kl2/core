@@ -10,7 +10,13 @@ export abstract class WorkspaceRepository {
   abstract create(
     data: Omit<
       Workspace,
-      'id' | 'members' | 'channels' | 'createdAt' | 'updatedAt' | 'deletedAt'
+      | 'id'
+      | 'members'
+      | 'channels'
+      | 'invites'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'deletedAt'
     >,
   ): Promise<Workspace>;
 
