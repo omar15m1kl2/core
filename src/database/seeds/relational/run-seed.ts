@@ -7,6 +7,7 @@ import { SeedModule } from './seed.module';
 import { StatusSeedService } from './status/status-seed.service';
 import { UserSeedService } from './user/user-seed.service';
 import { WorkspaceSeedService } from './workspace/workspace-seed.service';
+import { InviteStatusSeedService } from './invite-status/invite-status.seed.service';
 
 const runSeed = async () => {
   const app = await NestFactory.create(SeedModule);
@@ -18,9 +19,9 @@ const runSeed = async () => {
   await app.get(WorkspaceSeedService).run();
   await app.get(MessagesSeedService).run();
   await app.get(ChannelTypeSeedService).run();
-
   await app.get(ChannelSeedService).run();
   await app.get(MessagesSeedService).run();
+  await app.get(InviteStatusSeedService).run();
 
   await app.close();
 };
