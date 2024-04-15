@@ -9,6 +9,5 @@ export class Invite {
   workspace: Workspace;
   status: InviteStatus;
   createdAt: Date;
-  acceptedAt: Date;
-  revokedAt: Date;
+  updatedAt: Date;
 }

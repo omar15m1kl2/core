@@ -19,9 +19,7 @@ export class InviteMapper {
     }
     invite.status = raw.status;
     invite.createdAt = raw.createdAt;
-    invite.acceptedAt = raw.acceptedAt;
-    invite.revokedAt = raw.revokedAt;
-
+    invite.updatedAt = raw.updatedAt;
     return invite;
   }
 
@@ -45,8 +43,7 @@ export class InviteMapper {
     inviteEntity.workspace = workspace;
     inviteEntity.status = status;
     inviteEntity.createdAt = invite.createdAt;
-    inviteEntity.acceptedAt = invite.acceptedAt;
-    inviteEntity.revokedAt = invite.revokedAt;
+    inviteEntity.updatedAt = invite.updatedAt;
 
     return inviteEntity;
   }

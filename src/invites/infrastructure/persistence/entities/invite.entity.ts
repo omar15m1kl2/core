@@ -9,6 +9,7 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({
@@ -37,9 +38,6 @@ export class InviteEntity extends EntityRelationalHelper implements Invite {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: Date })
-  acceptedAt: Date;
-
-  @Column({ type: Date })
-  revokedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
