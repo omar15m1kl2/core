@@ -13,6 +13,8 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { UsersService } from '../users/users.service';
 import { Message } from '../messages/domain/message';
 import { MessagesService } from '../messages/messages.service';
+import { InviteToWorkspaceDto } from './dto/invite-to-workspace.dto';
+import { InvitesService } from 'src/invites/invites.service';
 
 @Injectable()
 export class WorkspacesService {
@@ -20,6 +22,7 @@ export class WorkspacesService {
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly userService: UsersService,
     private readonly messagesService: MessagesService,
+    private readonly inviteService: InvitesService,
   ) {}
 
   async getWorkspaces(
@@ -94,6 +97,24 @@ export class WorkspacesService {
       workspaceId,
       user.id,
       query,
+    );
+  }
+
+  async inviteToWorkspace(
+    workspaceId: Workspace['id'],
+    sender: User,
+    inviteDto: InviteToWorkspaceDto,
+  ) {
+    const workspace = await this.workspaceRepository.findOne({
+      id: workspaceId,
+    });
+    if (!workspace) {
+      throw new NotFoundException();
+    }
+    return this.inviteService.inviteToWorkspace(
+      workspace,
+      sender,
+      inviteDto.emails,
     );
   }
 

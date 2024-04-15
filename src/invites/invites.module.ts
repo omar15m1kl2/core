@@ -7,5 +7,6 @@ import { InvitePersistenceModule } from './infrastructure/persistence/persistenc
   imports: [InvitePersistenceModule],
   controllers: [InvitesController],
   providers: [InvitesService],
+  exports: [InvitesService],
 })
 export class InvitesModule {}
