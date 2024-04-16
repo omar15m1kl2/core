@@ -7,6 +7,7 @@ import { In, Repository } from 'typeorm';
 import { Invite } from 'src/invites/domain/invite';
 import { User } from 'src/users/domain/user';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
+import { inviteStatusEnum } from 'src/inviteStatuses/invite-status.enum';
 
 @Injectable()
 export class InviteRelationalRepository implements InviteRepository {
@@ -36,9 +37,14 @@ export class InviteRelationalRepository implements InviteRepository {
     userEmail: User['email'],
     paginationOptions: IPaginationOptions,
   ): Promise<Invite[]> {
+    const pendingStatus = {
+      id: inviteStatusEnum.pending,
+      name: 'Pending',
+    };
     const entities = await this.inviteRepository.find({
       where: {
         invitee_email: userEmail as string,
+        status: pendingStatus,
       },
       relations: ['workspace'],
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
