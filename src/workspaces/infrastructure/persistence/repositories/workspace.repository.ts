@@ -101,6 +101,20 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     return entity ? WorkspaceMapper.toDomain(entity) : null;
   }
 
+  async findWorkspaceByMemberId(
+    workspaceId: Workspace['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Workspace>> {
+    return this.workspaceRepository.findOne({
+      where: {
+        id: workspaceId as number,
+        members: {
+          id: memberId as number,
+        },
+      },
+    });
+  }
+
   async softDelete(id: Workspace['id']): Promise<void> {
     await this.workspaceRepository.softDelete(id);
   }

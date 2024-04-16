@@ -105,12 +105,21 @@ export class WorkspacesService {
     sender: User,
     inviteDto: InviteToWorkspaceDto,
   ) {
-    const workspace = await this.workspaceRepository.findOne({
-      id: workspaceId,
-    });
+    let workspace = await this.getWorkspace(workspaceId);
+
     if (!workspace) {
       throw new NotFoundException();
     }
+
+    workspace = await this.workspaceRepository.findWorkspaceByMemberId(
+      workspaceId,
+      sender.id,
+    );
+
+    if (!workspace) {
+      throw new ForbiddenException();
+    }
+
     return this.inviteService.inviteToWorkspace(
       workspace,
       sender,
@@ -123,7 +132,7 @@ export class WorkspacesService {
     user: User,
     updateWorkspaceDto: UpdateWorkspaceDto,
   ) {
-    const workspace = await this.workspaceRepository.findOne({ id });
+    const workspace = await this.getWorkspace(id);
     if (!workspace) {
       throw new NotFoundException();
     }

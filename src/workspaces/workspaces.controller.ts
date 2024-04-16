@@ -176,7 +176,7 @@ export class WorkspacesController {
   @ApiParam({
     name: 'id',
   })
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.ACCEPTED)
   inviteToWorkspace(
     @Param('id') id: Workspace['id'],
     @Request() request,

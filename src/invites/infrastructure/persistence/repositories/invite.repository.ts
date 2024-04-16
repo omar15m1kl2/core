@@ -13,14 +13,12 @@ export class InviteRelationalRepository implements InviteRepository {
     private readonly inviteRepository: Repository<InviteEntity>,
   ) {}
 
-  async create(data: Invite[]): Promise<Invite[]> {
-    const persistenceModel = data.map((data) =>
-      InviteMapper.toPersistence(data),
-    );
-    const newEntities = await this.inviteRepository.save(
+  async create(data: Invite): Promise<Invite> {
+    const persistenceModel = InviteMapper.toPersistence(data);
+    const newEntity = await this.inviteRepository.save(
       this.inviteRepository.create(persistenceModel),
     );
-    return newEntities.map((entity) => InviteMapper.toDomain(entity));
+    return InviteMapper.toDomain(newEntity);
   }
 
   async findManyByEmails(emails: string[]): Promise<Invite[]> {

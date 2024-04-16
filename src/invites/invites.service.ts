@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InviteRepository } from './infrastructure/persistence/invite.repository';
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { User } from 'src/users/domain/user';
 import { inviteStatusEnum } from 'src/inviteStatuses/invite-status.enum';
 import { InviteToWorkspaceDto } from 'src/workspaces/dto/invite-to-workspace.dto';
+import { Invite } from './domain/invite';
 
 @Injectable()
 export class InvitesService {
@@ -18,28 +19,31 @@ export class InvitesService {
       id: inviteStatusEnum.pending,
       name: 'Pending',
     };
-    const duplicates = await this.inviteRepository.findManyByEmails(emails);
-    const duplicateEmails = duplicates.map(
-      (duplicate) => duplicate.invitee_email,
+
+    const invitedEmails: string[] = [];
+    const duplicateEmails: string[] = [];
+    const invites: Invite[] = [];
+
+    const invitePromises = emails.map((email) =>
+      this.inviteRepository
+        .create({
+          workspace,
+          sender,
+          invitee_email: email,
+          status,
+        })
+        .then((invite) => {
+          invitedEmails.push(email);
+          invites.push(invite);
+        })
+        .catch((error) => {
+          Logger.error(error);
+          duplicateEmails.push(email);
+        }),
     );
-    if (duplicates.length) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Duplicate email(s) found',
-          duplicateEmails,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const invites = emails.map((invitee_email) => {
-      return {
-        workspace,
-        sender,
-        invitee_email,
-        status,
-      };
-    });
-    return this.inviteRepository.create(invites);
+
+    await Promise.all(invitePromises);
+
+    return { invites, invitedEmails, duplicateEmails };
   }
 }
