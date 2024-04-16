@@ -5,6 +5,8 @@ import { InviteEntity } from '../entities/invite.entity';
 import { InviteMapper } from '../mappers/invite.mapper';
 import { In, Repository } from 'typeorm';
 import { Invite } from 'src/invites/domain/invite';
+import { User } from 'src/users/domain/user';
+import { IPaginationOptions } from 'src/utils/types/pagination-options';
 
 @Injectable()
 export class InviteRelationalRepository implements InviteRepository {
@@ -27,6 +29,22 @@ export class InviteRelationalRepository implements InviteRepository {
         invitee_email: In(emails),
       },
     });
+    return entities.map((entity) => InviteMapper.toDomain(entity));
+  }
+
+  async findManyWithPagination(
+    userEmail: User['email'],
+    paginationOptions: IPaginationOptions,
+  ): Promise<Invite[]> {
+    const entities = await this.inviteRepository.find({
+      where: {
+        invitee_email: userEmail as string,
+      },
+      relations: ['workspace'],
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+    });
+
     return entities.map((entity) => InviteMapper.toDomain(entity));
   }
 }
