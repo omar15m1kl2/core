@@ -17,12 +17,8 @@ import {
 @Entity({
   name: 'invite',
 })
-@Unique('UQ_INVITEE_EMAIL_WORKSPACE_SENDER', [
-  'invitee_email',
-  'workspace',
-  'sender',
-])
-@Index('IDX_INVITEE_EMAIL', ['invitee_email', 'workspace'])
+@Unique(['invitee_email', 'workspace', 'sender'])
+@Index(['invitee_email', 'workspace'])
 export class InviteEntity extends EntityRelationalHelper implements Invite {
   @PrimaryGeneratedColumn()
   id: number;
