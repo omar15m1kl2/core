@@ -29,6 +29,8 @@ export abstract class UserRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<User[]>;
 
+  abstract getCount(filterOptions: FilterUserDto | null): Promise<number>;
+
   abstract findOne(fields: EntityCondition<User>): Promise<NullableType<User>>;
 
   abstract update(

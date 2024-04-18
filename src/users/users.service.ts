@@ -140,6 +140,10 @@ export class UsersService {
     return this.usersRepository.findOne(fields);
   }
 
+  getCount(filterOptions: FilterUserDto | null): Promise<number> {
+    return this.usersRepository.getCount(filterOptions);
+  }
+
   async update(
     id: User['id'],
     payload: DeepPartial<User>,
