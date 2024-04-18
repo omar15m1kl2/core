@@ -39,6 +39,11 @@ export abstract class WorkspaceRepository {
     memberId: User['id'],
   ): Promise<NullableType<Workspace>>;
 
+  abstract addUserToWorkspace(
+    workspaceId: Workspace['id'],
+    userId: User['id'],
+  ): Promise<void>;
+
   abstract update(
     workspaceId: Workspace['id'],
     updateWorkspace: UpdateWorkspaceDto,

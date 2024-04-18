@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InviteRepository } from '../invite.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InviteEntity } from '../entities/invite.entity';
 import { InviteMapper } from '../mappers/invite.mapper';
-import { In, Repository } from 'typeorm';
+import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { Invite } from 'src/invites/domain/invite';
 import { User } from 'src/users/domain/user';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { inviteStatusEnum } from 'src/inviteStatuses/invite-status.enum';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { NullableType } from 'src/utils/types/nullable.type';
 
 @Injectable()
 export class InviteRelationalRepository implements InviteRepository {
@@ -22,6 +24,39 @@ export class InviteRelationalRepository implements InviteRepository {
       this.inviteRepository.create(persistenceModel),
     );
     return InviteMapper.toDomain(newEntity);
+  }
+
+  async findOne(
+    fields: EntityCondition<Invite>,
+  ): Promise<NullableType<Invite>> {
+    const entity = await this.inviteRepository.findOne({
+      where: fields as FindOptionsWhere<InviteEntity>,
+      relations: ['workspace'],
+    });
+
+    return entity ? InviteMapper.toDomain(entity) : null;
+  }
+
+  async update(id: Invite['id'], payload: Partial<Invite>): Promise<Invite> {
+    const entity = await this.inviteRepository.findOne({
+      where: { id: id as number },
+      relations: ['workspace'],
+    });
+
+    if (!entity) {
+      throw new NotFoundException();
+    }
+
+    const updatedInvite = await this.inviteRepository.save(
+      this.inviteRepository.create(
+        InviteMapper.toPersistence({
+          ...InviteMapper.toDomain(entity),
+          ...payload,
+        }),
+      ),
+    );
+
+    return InviteMapper.toDomain(updatedInvite);
   }
 
   async findManyByEmails(emails: string[]): Promise<Invite[]> {

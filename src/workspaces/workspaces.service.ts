@@ -20,7 +20,7 @@ import { InvitesService } from 'src/invites/invites.service';
 export class WorkspacesService {
   constructor(
     private readonly workspaceRepository: WorkspaceRepository,
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
     private readonly inviteService: InvitesService,
   ) {}
@@ -43,12 +43,12 @@ export class WorkspacesService {
     const filterOptions = { workspaceId: id };
     const sortOptions = null;
     const paginationOptions = { page: 1, limit: 3 };
-    const threeMembers = await this.userService.findManyWithPagination({
+    const threeMembers = await this.usersService.findManyWithPagination({
       filterOptions,
       sortOptions,
       paginationOptions,
     });
-    const workspaceMemberscount = await this.userService.getCount({
+    const workspaceMemberscount = await this.usersService.getCount({
       workspaceId: id,
     });
     return { workspace, threeMembers, workspaceMemberscount };
@@ -73,7 +73,7 @@ export class WorkspacesService {
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
   }): Promise<User[]> {
-    return this.userService.findManyWithPagination({
+    return this.usersService.findManyWithPagination({
       filterOptions,
       sortOptions,
       paginationOptions,
@@ -95,7 +95,7 @@ export class WorkspacesService {
     user: User,
     query: IPaginationOptions,
   ): Promise<Message[]> {
-    const entity = await this.userService.findOne({ id: user.id });
+    const entity = await this.usersService.findOne({ id: user.id });
     if (!entity) {
       throw new NotFoundException();
     }
@@ -142,6 +142,33 @@ export class WorkspacesService {
       sender,
       inviteDto.emails,
     );
+  }
+
+  async joinWorkspaceInvite(
+    workspaceId: Workspace['id'],
+    inviteId,
+    user: User,
+  ) {
+    const userEntity = await this.usersService.findOne({ id: user.id });
+    if (!userEntity) {
+      return new NotFoundException();
+    }
+
+    const invite = await this.inviteService.findOne({ id: inviteId });
+    if (!invite) {
+      return new NotFoundException();
+    }
+
+    if (
+      invite.invitee_email != userEntity.email ||
+      invite.workspace.id != workspaceId
+    ) {
+      return new ForbiddenException();
+    }
+
+    await this.inviteService.acceptInvite(inviteId);
+
+    return this.workspaceRepository.addUserToWorkspace(workspaceId, user.id);
   }
 
   async updateWorkspace(

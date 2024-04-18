@@ -90,6 +90,14 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     });
   }
 
+  async addUserToWorkspace(workspaceId: Workspace['id'], userId: User['id']) {
+    return await this.workspaceRepository
+      .createQueryBuilder('workspace')
+      .relation(WorkspaceEntity, 'members')
+      .of(workspaceId)
+      .add(userId);
+  }
+
   async softDelete(id: Workspace['id']): Promise<void> {
     await this.workspaceRepository.softDelete(id);
   }
