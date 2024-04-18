@@ -37,20 +37,25 @@ export class InviteRelationalRepository implements InviteRepository {
     userEmail: User['email'],
     paginationOptions: IPaginationOptions,
   ): Promise<Invite[]> {
-    const pendingStatus = {
-      id: inviteStatusEnum.pending,
-      name: 'Pending',
-    };
-    const entities = await this.inviteRepository.find({
-      where: {
-        invitee_email: userEmail as string,
-        status: pendingStatus,
-      },
-      relations: ['workspace'],
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-    });
-
+    const entities = await this.inviteRepository
+      .createQueryBuilder('invite')
+      .leftJoinAndSelect('invite.workspace', 'workspace')
+      .leftJoinAndSelect('invite.sender', 'user', 'invite.senderId = user.id')
+      .where('invite.invitee_email = :email', { email: userEmail })
+      .andWhere('invite.status = :status', { status: inviteStatusEnum.pending })
+      .select([
+        'invite.id',
+        'invite.invitee_email',
+        'invite.sender',
+        'invite.createdAt',
+        'user.id',
+        'user.firstName',
+        'user.lastName',
+        'workspace.id',
+      ])
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit)
+      .getMany();
     return entities.map((entity) => InviteMapper.toDomain(entity));
   }
 }
