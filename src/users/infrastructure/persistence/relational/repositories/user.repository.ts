@@ -78,6 +78,21 @@ export class UsersRelationalRepository implements UserRepository {
     return entity ? UserMapper.toDomain(entity) : null;
   }
 
+  async getCount(filterOptions: FilterUserDto | null): Promise<number> {
+    const where: FindOptionsWhere<UserEntity> = {};
+    if (filterOptions?.workspaceId) {
+      where.workspaces = [{ id: filterOptions.workspaceId as number }];
+    }
+
+    if (filterOptions?.channelId) {
+      where.channels = [{ id: filterOptions.channelId as number }];
+    }
+
+    return await this.usersRepository.count({
+      where: where,
+    });
+  }
+
   async update(id: User['id'], payload: Partial<User>): Promise<User> {
     const entity = await this.usersRepository.findOne({
       where: { id: Number(id) },

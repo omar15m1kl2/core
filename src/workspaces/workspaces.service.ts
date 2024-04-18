@@ -36,7 +36,22 @@ export class WorkspacesService {
   }
 
   async getWorkspace(id: Workspace['id']) {
-    return this.workspaceRepository.findOne({ id });
+    const workspace = await this.workspaceRepository.findOne({ id });
+    if (!workspace) {
+      return new NotFoundException();
+    }
+    const filterOptions = { workspaceId: id };
+    const sortOptions = null;
+    const paginationOptions = { page: 1, limit: 3 };
+    const threeMembers = await this.userService.findManyWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
+    const workspaceMemberscount = await this.userService.getCount({
+      workspaceId: id,
+    });
+    return { workspace, threeMembers, workspaceMemberscount };
   }
 
   async createWorkspace(user: User, createWorkspaceDto: CreateWorkspaceDto) {
@@ -105,7 +120,9 @@ export class WorkspacesService {
     sender: User,
     inviteDto: InviteToWorkspaceDto,
   ) {
-    let workspace = await this.getWorkspace(workspaceId);
+    let workspace = await await this.workspaceRepository.findOne({
+      id: workspaceId,
+    });
 
     if (!workspace) {
       throw new NotFoundException();
@@ -132,10 +149,7 @@ export class WorkspacesService {
     user: User,
     updateWorkspaceDto: UpdateWorkspaceDto,
   ) {
-    const workspace = await this.getWorkspace(id);
-    if (!workspace) {
-      throw new NotFoundException();
-    }
+    const workspace = await this.workspaceRepository.findOne({ id });
 
     if (workspace?.owner.id !== user.id) {
       throw new ForbiddenException();
