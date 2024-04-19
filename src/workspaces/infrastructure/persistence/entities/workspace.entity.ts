@@ -15,6 +15,7 @@ import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { Workspace } from '../../../domain/workspace';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { ChannelEntity } from '../../../../channels/infrastructure/persistence/entities/channel.entity';
+import { InviteEntity } from 'src/invites/infrastructure/persistence/entities/invite.entity';
 
 @Entity({
   name: 'workspace',
@@ -41,6 +42,9 @@ export class WorkspaceEntity
 
   @OneToMany(() => ChannelEntity, (channel) => channel.workspace)
   channels: ChannelEntity[];
+
+  @OneToMany(() => InviteEntity, (invite) => invite.workspace)
+  invites: InviteEntity[];
 
   @Column({ type: String, nullable: true })
   description: string | null;

@@ -25,8 +25,6 @@ export class WorkspaceSeedService {
           description: 'Workspace 1 description',
           owner: user,
           members: [user],
-          createdAt: new Date(),
-          updatedAt: new Date(),
         }),
       ]);
     }

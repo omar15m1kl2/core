@@ -10,7 +10,13 @@ export abstract class WorkspaceRepository {
   abstract create(
     data: Omit<
       Workspace,
-      'id' | 'members' | 'channels' | 'createdAt' | 'updatedAt' | 'deletedAt'
+      | 'id'
+      | 'members'
+      | 'channels'
+      | 'invites'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'deletedAt'
     >,
   ): Promise<Workspace>;
 
@@ -27,6 +33,16 @@ export abstract class WorkspaceRepository {
   abstract findOne(
     fields: EntityCondition<Workspace>,
   ): Promise<NullableType<Workspace>>;
+
+  abstract checkUserMembership(
+    workspaceId: Workspace['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Workspace>>;
+
+  abstract addUserToWorkspace(
+    workspaceId: Workspace['id'],
+    userId: User['id'],
+  ): Promise<void>;
 
   abstract update(
     workspaceId: Workspace['id'],

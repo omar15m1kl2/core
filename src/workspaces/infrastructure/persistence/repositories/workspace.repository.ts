@@ -43,31 +43,6 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     return entities.map((workspace) => WorkspaceMapper.toDomain(workspace));
   }
 
-  async findUsersWithPagination(
-    workspaceId: Workspace['id'],
-    paginationOptions: IPaginationOptions,
-  ): Promise<User[]> {
-    const workspace = await this.workspaceRepository.findOne({
-      where: {
-        id: workspaceId as number,
-      },
-      relations: {
-        members: true,
-      },
-    });
-
-    if (!workspace) {
-      throw new Error('Workspace not found');
-    }
-
-    const members = workspace.members.slice(
-      (paginationOptions.page - 1) * paginationOptions.limit,
-      paginationOptions.page * paginationOptions.limit,
-    );
-
-    return members;
-  }
-
   async findChannelsWithPagination(
     workspaceId: Workspace['id'],
     paginationOptions: IPaginationOptions,
@@ -94,11 +69,33 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
   async findOne(
     fields: EntityCondition<Workspace>,
   ): Promise<NullableType<Workspace>> {
-    const entity = await this.workspaceRepository.findOne({
+    const workspace = await this.workspaceRepository.findOne({
       where: fields as FindOptionsWhere<WorkspaceEntity>,
     });
 
-    return entity ? WorkspaceMapper.toDomain(entity) : null;
+    return workspace ? WorkspaceMapper.toDomain(workspace) : null;
+  }
+
+  async checkUserMembership(
+    workspaceId: Workspace['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Workspace>> {
+    return this.workspaceRepository.findOne({
+      where: {
+        id: workspaceId as number,
+        members: {
+          id: memberId as number,
+        },
+      },
+    });
+  }
+
+  async addUserToWorkspace(workspaceId: Workspace['id'], userId: User['id']) {
+    return await this.workspaceRepository
+      .createQueryBuilder('workspace')
+      .relation(WorkspaceEntity, 'members')
+      .of(workspaceId)
+      .add(userId);
   }
 
   async softDelete(id: Workspace['id']): Promise<void> {

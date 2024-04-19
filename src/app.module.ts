@@ -35,6 +35,7 @@ import { MessagesModule } from './messages/messages.module';
 import { ChannelsModule } from './channels/channels.module';
 import { ThreadsModule } from './threads/threads.module';
 import { EventsModule } from './events/events.module';
+import { InvitesModule } from './invites/invites.module';
 
 @Module({
   imports: [
@@ -102,6 +103,7 @@ import { EventsModule } from './events/events.module';
     ChannelsModule,
     ThreadsModule,
     EventsModule,
+    InvitesModule,
   ],
   providers: [],
 })

@@ -12,6 +12,7 @@ import { WorkspaceSeedModule } from './workspace/workspace-seed.module';
 import { MessagesSeedModule } from './messages/messages-seed.module';
 import { ChannelSeedModule } from './channel/channel-seed.module';
 import { ChannelTypeSeedModule } from './channel-type/channel-type-seed.module';
+import { InviteStatusSeedModule } from './invite-status/invite-status-seed.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ChannelTypeSeedModule } from './channel-type/channel-type-seed.module';
     StatusSeedModule,
     UserSeedModule,
     WorkspaceSeedModule,
+    InviteStatusSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],

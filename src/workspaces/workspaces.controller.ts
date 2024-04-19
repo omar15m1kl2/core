@@ -24,6 +24,8 @@ import { infinityPagination } from '../utils/infinity-pagination';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Message } from '../messages/domain/message';
 import { InfinityPaginationResultType } from '../utils/types/infinity-pagination-result.type';
+import { InviteToWorkspaceDto } from './dto/invite-to-workspace.dto';
+import { Invite } from 'src/invites/domain/invite';
 
 @ApiTags('Workspaces')
 @Controller({
@@ -167,6 +169,39 @@ export class WorkspacesController {
       await this.service.findUserThreadsWithPagination(id, request.user, query),
       { page: query.page, limit: query.limit },
     );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/invite')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.ACCEPTED)
+  inviteToWorkspace(
+    @Param('id') id: Workspace['id'],
+    @Request() request,
+    @Body() emails: InviteToWorkspaceDto,
+  ) {
+    return this.service.inviteToWorkspace(id, request.user, emails);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/invite/:inviteId')
+  @ApiParam({
+    name: 'id',
+  })
+  @ApiParam({
+    name: 'inviteId',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  joinWorkspaceInvite(
+    @Param('id') id: Workspace['id'],
+    @Param('inviteId') inviteId: Invite['id'],
+    @Request() request,
+  ) {
+    return this.service.joinWorkspaceInvite(id, inviteId, request.user);
   }
 
   @ApiBearerAuth()
