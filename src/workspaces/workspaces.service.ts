@@ -40,18 +40,7 @@ export class WorkspacesService {
     if (!workspace) {
       return new NotFoundException();
     }
-    const filterOptions = { workspaceId: id };
-    const sortOptions = null;
-    const paginationOptions = { page: 1, limit: 3 };
-    const threeMembers = await this.usersService.findManyWithPagination({
-      filterOptions,
-      sortOptions,
-      paginationOptions,
-    });
-    const workspaceMemberscount = await this.usersService.getCount({
-      workspaceId: id,
-    });
-    return { workspace, threeMembers, workspaceMemberscount };
+    return workspace;
   }
 
   async createWorkspace(user: User, createWorkspaceDto: CreateWorkspaceDto) {
@@ -120,7 +109,7 @@ export class WorkspacesService {
     sender: User,
     inviteDto: InviteToWorkspaceDto,
   ) {
-    let workspace = await await this.workspaceRepository.findOne({
+    let workspace = await this.workspaceRepository.findOne({
       id: workspaceId,
     });
 
@@ -128,7 +117,7 @@ export class WorkspacesService {
       throw new NotFoundException();
     }
 
-    workspace = await this.workspaceRepository.findWorkspaceByMemberId(
+    workspace = await this.workspaceRepository.checkUserMembership(
       workspaceId,
       sender.id,
     );
@@ -149,13 +138,13 @@ export class WorkspacesService {
     inviteId,
     user: User,
   ) {
+    const workspace = await this.workspaceRepository.findOne({
+      id: workspaceId,
+    });
     const userEntity = await this.usersService.findOne({ id: user.id });
-    if (!userEntity) {
-      return new NotFoundException();
-    }
-
     const invite = await this.inviteService.findOne({ id: inviteId });
-    if (!invite) {
+
+    if (!workspace || !userEntity || !invite) {
       return new NotFoundException();
     }
 
