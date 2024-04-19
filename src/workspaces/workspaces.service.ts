@@ -141,10 +141,15 @@ export class WorkspacesService {
     const workspace = await this.workspaceRepository.findOne({
       id: workspaceId,
     });
+    if (!workspace) {
+      return new NotFoundException();
+    }
     const userEntity = await this.usersService.findOne({ id: user.id });
+    if (!userEntity) {
+      return new NotFoundException();
+    }
     const invite = await this.inviteService.findOne({ id: inviteId });
-
-    if (!workspace || !userEntity || !invite) {
+    if (!invite) {
       return new NotFoundException();
     }
 
