@@ -76,7 +76,7 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     return workspace ? WorkspaceMapper.toDomain(workspace) : null;
   }
 
-  async findWorkspaceByMemberId(
+  async checkUserMembership(
     workspaceId: Workspace['id'],
     memberId: User['id'],
   ): Promise<NullableType<Workspace>> {

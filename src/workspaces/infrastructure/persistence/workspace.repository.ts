@@ -34,7 +34,7 @@ export abstract class WorkspaceRepository {
     fields: EntityCondition<Workspace>,
   ): Promise<NullableType<Workspace>>;
 
-  abstract findWorkspaceByMemberId(
+  abstract checkUserMembership(
     workspaceId: Workspace['id'],
     memberId: User['id'],
   ): Promise<NullableType<Workspace>>;
