@@ -3,7 +3,7 @@ import { InviteRepository } from '../invite.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InviteEntity } from '../entities/invite.entity';
 import { InviteMapper } from '../mappers/invite.mapper';
-import { FindOptionsWhere, In, Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Invite } from 'src/invites/domain/invite';
 import { User } from 'src/users/domain/user';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
@@ -57,15 +57,6 @@ export class InviteRelationalRepository implements InviteRepository {
     );
 
     return InviteMapper.toDomain(updatedInvite);
-  }
-
-  async findManyByEmails(emails: string[]): Promise<Invite[]> {
-    const entities = await this.inviteRepository.find({
-      where: {
-        invitee_email: In(emails),
-      },
-    });
-    return entities.map((entity) => InviteMapper.toDomain(entity));
   }
 
   async findManyWithPagination(

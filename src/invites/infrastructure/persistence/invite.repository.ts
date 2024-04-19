@@ -19,8 +19,6 @@ export abstract class InviteRepository {
     payload: DeepPartial<Invite>,
   ): Promise<Invite>;
 
-  abstract findManyByEmails(emails: string[]): Promise<Invite[]>;
-
   abstract findManyWithPagination(
     userEmail: User['email'],
     paginationOptions: IPaginationOptions,
