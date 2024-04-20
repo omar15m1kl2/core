@@ -42,10 +42,6 @@ export class CreateUserDto {
   @IsOptional()
   statusMessage?: string | null;
 
-  @ApiProperty({ example: 'https://example.com/avatar.jpg' })
-  @IsOptional()
-  avatarUrl?: string | null;
-
   @ApiProperty({ type: () => FileDto })
   @IsOptional()
   photo?: FileDto | null;
