@@ -64,9 +64,6 @@ export class UserEntity extends EntityRelationalHelper implements User {
   @Column({ type: String, nullable: true })
   statusMessage?: string | null;
 
-  @Column({ type: String, nullable: true })
-  avatarUrl?: string | null;
-
   @Column({ default: AuthProvidersEnum.email })
   @Expose({ groups: ['me', 'admin'] })
   provider: string;
