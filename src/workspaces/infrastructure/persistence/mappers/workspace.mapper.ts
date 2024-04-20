@@ -44,11 +44,13 @@ export class WorkspaceMapper {
     if (workspace.photo) {
       photo = new FileEntity();
       photo.id = workspace.photo.id;
+      photo.path = workspace.photo.path;
     }
     workspaceEntity.title = workspace.title;
     workspaceEntity.description = workspace.description;
     workspaceEntity.owner = owner;
     workspaceEntity.members = members;
+    workspaceEntity.photo = photo;
     workspaceEntity.createdAt = workspace.createdAt;
     workspaceEntity.updatedAt = workspace.updatedAt;
     workspaceEntity.deletedAt = workspace.deletedAt;

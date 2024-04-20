@@ -5,6 +5,7 @@ import { WorkspacePersistenceModule } from './infrastructure/persistence/persist
 import { UsersModule } from '../users/users.module';
 import { MessagesModule } from '../messages/messages.module';
 import { InvitesModule } from 'src/invites/invites.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { InvitesModule } from 'src/invites/invites.module';
     UsersModule,
     MessagesModule,
     InvitesModule,
+    FilesModule,
   ],
   controllers: [WorkspacesController],
   providers: [WorkspacesService],
