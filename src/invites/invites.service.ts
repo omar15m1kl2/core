@@ -36,35 +36,34 @@ export class InvitesService {
     const duplicateEmails: string[] = [];
     const invites: Invite[] = [];
 
-    const invitePromises = emails.map((email) =>
-      this.inviteRepository
-        .create({
+    const invitePromises = emails.map(async (email) => {
+      try {
+        const invite = await this.inviteRepository.create({
           workspace,
           sender,
           invitee_email: email,
           status,
-        })
-        .then((invite) => {
-          invitedEmails.push(email);
-          invites.push(invite);
+        });
 
-          this.mailService
-            .sendWorkspaceInvite({
-              to: email,
-              data: {
-                workspaceId: workspace.id as string,
-                inviteId: invite.id as string,
-              },
-            })
-            .catch((error) => {
-              Logger.error(`Failed to send workspace invite: ${error.message}`);
-            });
-        })
-        .catch((error) => {
-          Logger.error(error);
-          duplicateEmails.push(email);
-        }),
-    );
+        invitedEmails.push(email);
+        invites.push(invite);
+
+        try {
+          await this.mailService.sendWorkspaceInvite({
+            to: email,
+            data: {
+              workspaceId: workspace.id as string,
+              inviteId: invite.id as string,
+            },
+          });
+        } catch (error) {
+          Logger.error(`Failed to send workspace invite: ${error.message}`);
+        }
+      } catch (error) {
+        Logger.error(error);
+        duplicateEmails.push(email);
+      }
+    });
 
     await Promise.all(invitePromises);
 
