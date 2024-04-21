@@ -114,4 +114,54 @@ export class MailService {
       },
     });
   }
+
+  async sendWorkspaceInvite(
+    mailData: MailData<{ workspaceId: string; inviteId: string }>,
+  ): Promise<void> {
+    const i18n = I18nContext.current();
+    let inviteTitle: MaybeType<string>;
+    let text1: MaybeType<string>;
+    let text2: MaybeType<string>;
+    let text3: MaybeType<string>;
+
+    if (i18n) {
+      [inviteTitle, text1, text2, text3] = await Promise.all([
+        i18n.t('common.inviteToWorkspace'),
+        i18n.t('invite-to-workspace.text1'),
+        i18n.t('invite-to-workspace.text2'),
+        i18n.t('invite-to-workspace.text3'),
+      ]);
+    }
+
+    const url = new URL(
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }) +
+        `/workspaces/${mailData.data.workspaceId}/invites/${mailData.data.inviteId}`,
+    );
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: inviteTitle,
+      text: `${url.toString()} ${inviteTitle}`,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'mail',
+        'mail-templates',
+        'workspace-invite.hbs',
+      ),
+      context: {
+        title: inviteTitle,
+        url: url.toString(),
+        actionTitle: inviteTitle,
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1,
+        text2,
+        text3,
+      },
+    });
+  }
 }

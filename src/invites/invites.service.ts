@@ -8,12 +8,14 @@ import { Invite } from './domain/invite';
 import { UsersService } from 'src/users/users.service';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class InvitesService {
   constructor(
     private readonly inviteRepository: InviteRepository,
     private readonly usersService: UsersService,
+    private readonly mailService: MailService,
   ) {}
 
   findOne(fields: EntityCondition<Invite>): Promise<NullableType<Invite>> {
@@ -34,23 +36,34 @@ export class InvitesService {
     const duplicateEmails: string[] = [];
     const invites: Invite[] = [];
 
-    const invitePromises = emails.map((email) =>
-      this.inviteRepository
-        .create({
+    const invitePromises = emails.map(async (email) => {
+      try {
+        const invite = await this.inviteRepository.create({
           workspace,
           sender,
           invitee_email: email,
           status,
-        })
-        .then((invite) => {
-          invitedEmails.push(email);
-          invites.push(invite);
-        })
-        .catch((error) => {
-          Logger.error(error);
-          duplicateEmails.push(email);
-        }),
-    );
+        });
+
+        invitedEmails.push(email);
+        invites.push(invite);
+
+        try {
+          await this.mailService.sendWorkspaceInvite({
+            to: email,
+            data: {
+              workspaceId: workspace.id as string,
+              inviteId: invite.id as string,
+            },
+          });
+        } catch (error) {
+          Logger.error(`Failed to send workspace invite: ${error.message}`);
+        }
+      } catch (error) {
+        Logger.error(error);
+        duplicateEmails.push(email);
+      }
+    });
 
     await Promise.all(invitePromises);
 
