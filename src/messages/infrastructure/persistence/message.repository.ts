@@ -11,10 +11,34 @@ import {
   FilterMessageDto,
   SortMessageDto,
 } from 'src/messages/dto/query-message.dto';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { NullableType } from 'src/utils/types/nullable.type';
+import { DeepPartial } from 'src/utils/types/deep-partial.type';
 
 @Injectable()
 export abstract class MessageRepository {
-  abstract create(data: Message): Promise<Message>;
+  abstract create(
+    data: Omit<
+      Message,
+      | 'id'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'deletedAt'
+      | 'childsCount'
+      | 'participants'
+    >,
+  ): Promise<Message>;
+
+  abstract findOne(
+    fields: EntityCondition<Message>,
+  ): Promise<NullableType<Message>>;
+
+  abstract softDelete(id: Message['id']): Promise<void>;
+
+  abstract update(
+    id: Message['id'],
+    payload: DeepPartial<Message>,
+  ): Promise<Message>;
 
   abstract findMessagesWithCursorPagination({
     channelId,

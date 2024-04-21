@@ -11,8 +11,8 @@ import { Channel } from 'src/channels/domain/channel';
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { Message } from '../domain/message';
 
-export class CreateWorkspaceDto {
-  @ApiProperty({ example: 'My workspace' })
+export class CreateMessageDto {
+  @ApiProperty({ example: 'New message' })
   @IsNotEmpty()
   @IsString()
   content: string;
@@ -36,12 +36,12 @@ export class CreateWorkspaceDto {
   @IsOptional()
   @Type(() => Message)
   @ValidateNested()
-  parentMessage: Message;
+  parentMessage?: Message;
 
   @ApiProperty({
     example: 'true',
   })
   @IsNotEmpty()
   @IsBoolean()
-  draft: boolean;
+  draft: boolean = false;
 }
