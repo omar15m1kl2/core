@@ -16,6 +16,7 @@ import { Workspace } from '../../../domain/workspace';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { ChannelEntity } from '../../../../channels/infrastructure/persistence/entities/channel.entity';
 import { InviteEntity } from 'src/invites/infrastructure/persistence/entities/invite.entity';
+import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
 
 @Entity({
   name: 'workspace',
@@ -48,6 +49,11 @@ export class WorkspaceEntity
 
   @Column({ type: String, nullable: true })
   description: string | null;
+
+  @ManyToOne(() => FileEntity, {
+    eager: true,
+  })
+  photo?: FileEntity | null;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import { Message } from '../messages/domain/message';
 import { MessagesService } from '../messages/messages.service';
 import { InviteToWorkspaceDto } from './dto/invite-to-workspace.dto';
 import { InvitesService } from 'src/invites/invites.service';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class WorkspacesService {
@@ -23,6 +26,7 @@ export class WorkspacesService {
     private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
     private readonly inviteService: InvitesService,
+    private readonly filesService: FilesService,
   ) {}
 
   async getWorkspaces(
@@ -49,6 +53,24 @@ export class WorkspacesService {
       members: [user],
       ...createWorkspaceDto,
     };
+
+    if (clonedPayload.photo?.id) {
+      const fileObject = await this.filesService.findOne({
+        id: clonedPayload.photo.id,
+      });
+      if (!fileObject) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNPROCESSABLE_ENTITY,
+            errors: {
+              photo: 'imageNotExists',
+            },
+          },
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+      clonedPayload.photo = fileObject;
+    }
 
     return this.workspaceRepository.create(clonedPayload);
   }
@@ -170,13 +192,32 @@ export class WorkspacesService {
     user: User,
     updateWorkspaceDto: UpdateWorkspaceDto,
   ) {
+    const clonedPayload = { ...updateWorkspaceDto };
+
     const workspace = await this.workspaceRepository.findOne({ id });
 
     if (workspace?.owner.id !== user.id) {
       throw new ForbiddenException();
     }
 
-    return this.workspaceRepository.update(id, updateWorkspaceDto);
+    if (clonedPayload.photo?.id) {
+      const fileObject = await this.filesService.findOne({
+        id: clonedPayload.photo.id,
+      });
+      if (!fileObject) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNPROCESSABLE_ENTITY,
+            errors: {
+              photo: 'imageNotExists',
+            },
+          },
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+      clonedPayload.photo = fileObject;
+    }
+    return this.workspaceRepository.update(id, clonedPayload);
   }
 
   async remove(id: Workspace['id'], user: User) {
