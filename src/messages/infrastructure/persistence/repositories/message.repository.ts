@@ -19,6 +19,7 @@ import { Workspace } from 'src/workspaces/domain/workspace';
 import { MessageRepository } from '../message.repository';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
+import { loadRelationships } from 'src/utils/load-relationships';
 
 @Injectable()
 export class MessageRelationalRepository implements MessageRepository {
@@ -41,6 +42,13 @@ export class MessageRelationalRepository implements MessageRepository {
     const entity = await this.messageRepository.findOne({
       where: fields as FindOptionsWhere<MessageEntity>,
     });
+
+    await loadRelationships(
+      this.messageRepository,
+      ['channel', 'sender'],
+      [entity],
+    );
+
     return entity ? MessageMapper.toDomain(entity) : null;
   }
 
