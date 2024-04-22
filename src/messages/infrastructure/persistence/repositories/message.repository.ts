@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageEntity } from '../entities/message.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { MessageMapper } from '../mappers/message.mapper';
 import { Message } from 'src/messages/domain/message';
 import { Channel } from 'src/channels/domain/channel';
@@ -17,6 +17,8 @@ import {
 } from 'src/messages/dto/query-message.dto';
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { MessageRepository } from '../message.repository';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { NullableType } from 'src/utils/types/nullable.type';
 
 @Injectable()
 export class MessageRelationalRepository implements MessageRepository {
@@ -31,6 +33,39 @@ export class MessageRelationalRepository implements MessageRepository {
       this.messageRepository.create(presistenceModel),
     );
     return MessageMapper.toDomain(newEntity);
+  }
+
+  async findOne(
+    fields: EntityCondition<Message>,
+  ): Promise<NullableType<Message>> {
+    const entity = await this.messageRepository.findOne({
+      where: fields as FindOptionsWhere<MessageEntity>,
+    });
+    return entity ? MessageMapper.toDomain(entity) : null;
+  }
+
+  async softDelete(id: Message['id']): Promise<void> {
+    await this.messageRepository.softDelete(id);
+  }
+
+  async update(id: Message['id'], payload: Partial<Message>): Promise<Message> {
+    const entity = await this.messageRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    if (!entity) {
+      throw new Error('Message not found');
+    }
+
+    const updatedMessage = await this.messageRepository.save(
+      this.messageRepository.create(
+        MessageMapper.toPersistence({
+          ...MessageMapper.toDomain(entity),
+          ...payload,
+        }),
+      ),
+    );
+    return MessageMapper.toDomain(updatedMessage);
   }
 
   async findMessagesWithCursorPagination({

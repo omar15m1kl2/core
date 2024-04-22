@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MessageRepository } from './infrastructure/persistence/message.repository';
 import {
   ICursorPaginationOptions,
@@ -9,6 +13,8 @@ import { User } from '../users/domain/user';
 import { Message } from './domain/message';
 import { Workspace } from '../workspaces/domain/workspace';
 import { FilterMessageDto, SortMessageDto } from './dto/query-message.dto';
+import { CreateMessageDto } from './dto/create-message.dto';
+import { DeepPartial } from 'src/utils/types/deep-partial.type';
 
 @Injectable()
 export class MessagesService {
@@ -51,5 +57,59 @@ export class MessagesService {
 
   async subscribeThread(userId: User['id'], parentMessageId: Message['id']) {
     return this.messageRepository.subscribeThread(userId, parentMessageId);
+  }
+
+  async createMessage(
+    user: User,
+    createMessageDto: CreateMessageDto,
+  ): Promise<Message> {
+    const clonedPayload = {
+      sender: user,
+      ...createMessageDto,
+    };
+
+    return this.messageRepository.create(clonedPayload);
+  }
+
+  async getMessageById(id: Message['id']): Promise<Message> {
+    const message = await this.messageRepository.findOne({ id });
+
+    if (!message) {
+      throw new NotFoundException();
+    }
+
+    return message;
+  }
+
+  async updateMessage(
+    user: User,
+    id: Message['id'],
+    payload: DeepPartial<Message>,
+  ): Promise<Message> {
+    const message = await this.messageRepository.findOne({ id });
+
+    if (!message) {
+      throw new NotFoundException();
+    }
+
+    if (message.sender.id !== user.id) {
+      throw new ForbiddenException();
+    }
+
+    return this.messageRepository.update(id, payload);
+  }
+
+  async softDelete(user: User, id: Message['id']): Promise<void> {
+    const message = await this.messageRepository.findOne({ id });
+
+    if (!message) {
+      throw new NotFoundException();
+    }
+
+    if (message.sender.id !== user.id) {
+      throw new ForbiddenException();
+    }
+
+    await this.messageRepository.softDelete(id);
   }
 }

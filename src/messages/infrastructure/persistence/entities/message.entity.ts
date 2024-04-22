@@ -36,7 +36,9 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   })
   sender: UserEntity;
 
-  @ManyToOne(() => ChannelEntity, (channel) => channel.messages)
+  @ManyToOne(() => ChannelEntity, (channel) => channel.messages, {
+    eager: true,
+  })
   channel: ChannelEntity;
 
   @CreateDateColumn()
@@ -48,7 +50,9 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @ManyToOne(() => WorkspaceEntity)
+  @ManyToOne(() => WorkspaceEntity, {
+    eager: true,
+  })
   workspace: WorkspaceEntity;
 
   @ManyToOne(() => MessageEntity)
