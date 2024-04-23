@@ -37,9 +37,7 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @ManyToOne(() => ChannelTypeEntity)
   type?: ChannelTypeEntity;
 
-  @ManyToMany(() => UserEntity, (user) => user.channels, {
-    eager: true,
-  })
+  @ManyToMany(() => UserEntity, (user) => user.channels)
   @JoinTable()
   members: UserEntity[];
 
@@ -55,8 +53,6 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.channels, {
-    eager: true,
-  })
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.channels)
   workspace: WorkspaceEntity;
 }
