@@ -10,6 +10,8 @@ import { WsJwtAuthGuard } from 'src/auth/ws-jwt-auth/ws-jwt-auth.guard';
 import { SocketAuthMiddleware } from 'src/auth/ws-jwt-auth/ws-jwt.middleware';
 import { AllConfigType } from 'src/config/config.type';
 import { Socket } from 'socket.io';
+import { MessagesService } from 'src/messages/messages.service';
+import { MessageSentDto } from './dto/message-sent.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
@@ -26,6 +28,7 @@ import { ChannelsService } from 'src/channels/channels.service';
 export class EventsGateway {
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
+    private readonly messagesService: MessagesService,
     private readonly workspacesService: WorkspacesService,
     private readonly channelsService: ChannelsService,
   ) {}
@@ -101,6 +104,38 @@ export class EventsGateway {
         room_id: payload.data.room_id,
         message: 'Subscribed',
       },
+      seq_reply: payload.seq,
+    };
+  }
+
+  @SubscribeMessage('message_sent')
+  async handleMessageSent(
+    client: any,
+    payload: MessageSentDto,
+  ): Promise<EventReplyDto> {
+    const message = await this.messagesService.createMessage(
+      client.user,
+      payload.data,
+    );
+
+    if (!message) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '500',
+          message: 'Internal Server Error',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    this.server
+      .to('channel' + message.channel.id)
+      .emit('message_sent', message);
+
+    return {
+      status: 'OK',
+      data: { message },
       seq_reply: payload.seq,
     };
   }
