@@ -15,5 +15,6 @@ import { UsersModule } from '../users/users.module';
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService],
+  exports: [ChannelsService],
 })
 export class ChannelsModule {}

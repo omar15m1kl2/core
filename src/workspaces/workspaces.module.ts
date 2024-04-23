@@ -17,5 +17,6 @@ import { FilesModule } from 'src/files/files.module';
   ],
   controllers: [WorkspacesController],
   providers: [WorkspacesService],
+  exports: [WorkspacesService],
 })
 export class WorkspacesModule {}

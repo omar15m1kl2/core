@@ -10,6 +10,10 @@ import { WsJwtAuthGuard } from 'src/auth/ws-jwt-auth/ws-jwt-auth.guard';
 import { SocketAuthMiddleware } from 'src/auth/ws-jwt-auth/ws-jwt.middleware';
 import { AllConfigType } from 'src/config/config.type';
 import { Socket } from 'socket.io';
+import { EventReplyDto } from './dto/event-reply.dto';
+import { SubscribeDto } from './dto/subscribe.dto';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { ChannelsService } from 'src/channels/channels.service';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -20,7 +24,11 @@ import { Socket } from 'socket.io';
 @UseGuards(WsJwtAuthGuard)
 @Injectable()
 export class EventsGateway {
-  constructor(private configService: ConfigService<AllConfigType>) {}
+  constructor(
+    private readonly configService: ConfigService<AllConfigType>,
+    private readonly workspacesService: WorkspacesService,
+    private readonly channelsService: ChannelsService,
+  ) {}
   @WebSocketServer()
   server: Server;
 
@@ -32,5 +40,68 @@ export class EventsGateway {
   handleMessage(client: any, payload: any): string {
     Logger.log(client, payload);
     return 'Hello world!';
+  }
+
+  @SubscribeMessage('subscribe')
+  async handleSubscribe(
+    client: any,
+    payload: SubscribeDto,
+  ): Promise<EventReplyDto> {
+    switch (payload.data.room_type) {
+      case 'workspace': {
+        const workspace = await this.workspacesService.checkUserMembership(
+          payload.data.room_id,
+          client.user.id,
+        );
+
+        if (!workspace) {
+          return {
+            status: 'FAILED',
+            error: {
+              id: '404',
+              message: 'Forbidden',
+            },
+            seq_reply: payload.seq,
+          };
+        }
+
+        payload.data.room_id = 'workspace' + payload.data.room_id;
+        break;
+      }
+      case 'channel': {
+        const channel = await this.channelsService.checkUserMembership(
+          payload.data.room_id,
+          client.user.id,
+        );
+
+        if (!channel) {
+          return {
+            status: 'FAILED',
+            error: {
+              id: '404',
+              message: 'Forbidden',
+            },
+            seq_reply: payload.seq,
+          };
+        }
+
+        payload.data.room_id = 'channel' + payload.data.room_id;
+        break;
+      }
+      case 'user': {
+        payload.data.room_id = 'user' + payload.data.room_id;
+        break;
+      }
+    }
+
+    client.join(payload.data.room_id);
+    return {
+      status: 'OK',
+      data: {
+        room_id: payload.data.room_id,
+        message: 'Subscribed',
+      },
+      seq_reply: payload.seq,
+    };
   }
 }
