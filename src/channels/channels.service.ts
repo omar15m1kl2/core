@@ -88,6 +88,10 @@ export class ChannelsService {
     });
   }
 
+  async checkUserMembership(workspaceId: Channel['id'], memberId: User['id']) {
+    return this.channelRepostory.checkUserMembership(workspaceId, memberId);
+  }
+
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {

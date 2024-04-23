@@ -6,6 +6,7 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { User } from 'src/users/domain/user';
 
 @Injectable()
 export class ChannelRelationalRepository {
@@ -29,6 +30,20 @@ export class ChannelRelationalRepository {
       where: fields as FindOptionsWhere<ChannelEntity>,
     });
     return entity ? ChannelMapper.toDomain(entity) : null;
+  }
+
+  async checkUserMembership(
+    channelId: Channel['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Channel>> {
+    return this.channelRepository.findOne({
+      where: {
+        id: channelId as number,
+        members: {
+          id: memberId as number,
+        },
+      },
+    });
   }
 
   async update(id: Channel['id'], payload: Partial<Channel>): Promise<Channel> {

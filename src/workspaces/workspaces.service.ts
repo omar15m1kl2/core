@@ -155,6 +155,13 @@ export class WorkspacesService {
     );
   }
 
+  async checkUserMembership(
+    workspaceId: Workspace['id'],
+    memberId: User['id'],
+  ) {
+    return this.workspaceRepository.checkUserMembership(workspaceId, memberId);
+  }
+
   async joinWorkspaceInvite(
     workspaceId: Workspace['id'],
     inviteId,
