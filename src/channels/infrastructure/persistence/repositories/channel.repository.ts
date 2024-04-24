@@ -6,8 +6,10 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
-import { FilterChannelDto } from 'src/channels/dto/query-channel.dto';
-import { SortUserDto } from 'src/users/dto/query-user.dto';
+import {
+  FilterChannelDto,
+  SortChannelDto,
+} from 'src/channels/dto/query-channel.dto';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 
 @Injectable()
@@ -40,7 +42,7 @@ export class ChannelRelationalRepository {
     paginationOptions,
   }: {
     filterOptions?: FilterChannelDto | null;
-    sortOptions?: SortUserDto[] | null;
+    sortOptions?: SortChannelDto[] | null;
     paginationOptions: IPaginationOptions;
   }): Promise<Channel[]> {
     const where: FindOptionsWhere<ChannelEntity> = {};
