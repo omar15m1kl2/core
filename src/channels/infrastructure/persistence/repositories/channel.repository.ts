@@ -6,6 +6,7 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { loadRelationships } from 'src/utils/load-relationships';
 
 @Injectable()
 export class ChannelRelationalRepository {
@@ -40,6 +41,7 @@ export class ChannelRelationalRepository {
       throw new Error('Channel not found');
     }
 
+    await loadRelationships(this.channelRepository, ['workspace'], [entity]);
     const updatedChannel = await this.channelRepository.save(
       this.channelRepository.create(
         ChannelMapper.toPersistence({

@@ -29,14 +29,17 @@ export class ChannelMapper {
     const owner = new UserEntity();
     owner.id = Number(channel.owner.id);
 
-    const members = channel.members.map((member) => {
+    const members = channel.members?.map((member) => {
       const user = new UserEntity();
       user.id = Number(member.id);
       return user;
     });
 
-    const workspace = new WorkspaceEntity();
-    workspace.id = Number(channel.workspace.id);
+    let workspace: WorkspaceEntity | undefined = undefined;
+    if (channel.workspace) {
+      workspace = new WorkspaceEntity();
+      workspace.id = Number(channel.workspace.id);
+    }
 
     const channelEntity = new ChannelEntity();
     if (channel.id && typeof channel.id === 'number') {
