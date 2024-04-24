@@ -19,6 +19,7 @@ import {
   FilterMessageDto,
   SortMessageDto,
 } from 'src/messages/dto/query-message.dto';
+import { FilterChannelDto, SortChannelDto } from './dto/query-channel.dto';
 
 @Injectable()
 export class ChannelsService {
@@ -88,6 +89,21 @@ export class ChannelsService {
     });
   }
 
+  findManyWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterChannelDto | null;
+    sortOptions?: SortChannelDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Channel[]> {
+    return this.channelRepostory.findManyWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
+  }
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {

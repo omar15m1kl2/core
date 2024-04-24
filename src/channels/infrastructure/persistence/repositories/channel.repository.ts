@@ -6,6 +6,9 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
+import { FilterChannelDto } from 'src/channels/dto/query-channel.dto';
+import { SortUserDto } from 'src/users/dto/query-user.dto';
+import { IPaginationOptions } from 'src/utils/types/pagination-options';
 
 @Injectable()
 export class ChannelRelationalRepository {
@@ -31,6 +34,39 @@ export class ChannelRelationalRepository {
     return entity ? ChannelMapper.toDomain(entity) : null;
   }
 
+  async findManyWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterChannelDto | null;
+    sortOptions?: SortUserDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Channel[]> {
+    const where: FindOptionsWhere<ChannelEntity> = {};
+    if (filterOptions?.workspaceId) {
+      where.workspace = [{ id: filterOptions.workspaceId as number }];
+    }
+
+    if (filterOptions?.userId) {
+      where.members = [{ id: filterOptions.userId as number }];
+    }
+
+    const entities = await this.channelRepository.find({
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+      where: where,
+      order: sortOptions?.reduce(
+        (accumulator, sort) => ({
+          ...accumulator,
+          [sort.orderBy]: sort.order,
+        }),
+        {},
+      ),
+    });
+
+    return entities.map((channel) => ChannelMapper.toDomain(channel));
+  }
   async update(id: Channel['id'], payload: Partial<Channel>): Promise<Channel> {
     const entity = await this.channelRepository.findOne({
       where: { id: Number(id) },

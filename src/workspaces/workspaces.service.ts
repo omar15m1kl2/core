@@ -18,6 +18,12 @@ import { MessagesService } from '../messages/messages.service';
 import { InviteToWorkspaceDto } from './dto/invite-to-workspace.dto';
 import { InvitesService } from 'src/invites/invites.service';
 import { FilesService } from 'src/files/files.service';
+import { Channel } from 'src/channels/domain/channel';
+import { ChannelsService } from 'src/channels/channels.service';
+import {
+  FilterChannelDto,
+  SortChannelDto,
+} from 'src/channels/dto/query-channel.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -25,7 +31,8 @@ export class WorkspacesService {
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
-    private readonly inviteService: InvitesService,
+    private readonly channelsService: ChannelsService,
+    private readonly invitesService: InvitesService,
     private readonly filesService: FilesService,
   ) {}
 
@@ -91,14 +98,20 @@ export class WorkspacesService {
     });
   }
 
-  async getWorkspaceChannels(
-    workspaceId: Workspace['id'],
-    paginationOptions: { page: number; limit: number },
-  ) {
-    return this.workspaceRepository.findChannelsWithPagination(
-      workspaceId,
+  async getWorkspaceChannels({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterChannelDto | null;
+    sortOptions?: SortChannelDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Channel[]> {
+    return this.channelsService.findManyWithPagination({
+      filterOptions,
+      sortOptions,
       paginationOptions,
-    );
+    });
   }
 
   async findUserThreadsWithPagination(
@@ -148,7 +161,7 @@ export class WorkspacesService {
       throw new ForbiddenException();
     }
 
-    return this.inviteService.inviteToWorkspace(
+    return this.invitesService.inviteToWorkspace(
       workspace,
       sender,
       inviteDto.emails,
@@ -170,7 +183,7 @@ export class WorkspacesService {
     if (!userEntity) {
       return new NotFoundException();
     }
-    const invite = await this.inviteService.findOne({ id: inviteId });
+    const invite = await this.invitesService.findOne({ id: inviteId });
     if (!invite) {
       return new NotFoundException();
     }
@@ -182,7 +195,7 @@ export class WorkspacesService {
       return new ForbiddenException();
     }
 
-    await this.inviteService.acceptInvite(inviteId);
+    await this.invitesService.acceptInvite(inviteId);
 
     return this.workspaceRepository.addUserToWorkspace(workspaceId, user.id);
   }
