@@ -18,10 +18,10 @@ import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Channel } from './domain/channel';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { MessagesService } from 'src/messages/messages.service';
 import { QueryUserDto } from '../users/dto/query-user.dto';
 import { infinityPagination } from '../utils/infinity-pagination';
 import { QueryMessageDto } from 'src/messages/dto/query-message.dto';
+import { AddUsersToChannelDto } from './dto/add-users-to-channel.dto';
 
 @ApiTags('Channels')
 @Controller({
@@ -29,10 +29,7 @@ import { QueryMessageDto } from 'src/messages/dto/query-message.dto';
   version: '1',
 })
 export class ChannelsController {
-  constructor(
-    private readonly channelsService: ChannelsService,
-    private readonly messageService: MessagesService,
-  ) {}
+  constructor(private readonly channelsService: ChannelsService) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
@@ -128,6 +125,21 @@ export class ChannelsController {
       }),
       { page, limit },
     );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/addUser')
+  @ApiParam({
+    name: 'id',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  addUserToChannel(
+    @Param('id') id: Channel['id'],
+    @Body() body: AddUsersToChannelDto,
+    @Request() request,
+  ) {
+    return this.channelsService.addUsersToChannel(request.user, id, body.Users);
   }
 
   @ApiBearerAuth()

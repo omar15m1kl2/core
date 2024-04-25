@@ -2,15 +2,12 @@ import { Channel } from 'src/channels/domain/channel';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { DeepPartial } from 'typeorm';
-import {
-  ICursorPaginationOptions,
-  IPaginationOptions,
-} from '../../../utils/types/pagination-options';
-import { Message } from '../../../messages/domain/message';
+import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import {
   FilterChannelDto,
   SortChannelDto,
 } from 'src/channels/dto/query-channel.dto';
+import { User } from 'src/users/domain/user';
 
 export abstract class ChannelRepository {
   abstract create(
@@ -39,10 +36,7 @@ export abstract class ChannelRepository {
     payload: DeepPartial<Channel>,
   ): Promise<Channel>;
 
-  abstract findMessagesWithCursorPagination(
-    id: Channel['id'],
-    paginationOptions: ICursorPaginationOptions,
-  ): Promise<Message[]>;
+  abstract addUsers(id: Channel['id'], users: User[]): Promise<void[]>;
 
   abstract softDelete(id: Channel['id']): Promise<void>;
 }

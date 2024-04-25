@@ -6,12 +6,16 @@ import { Channel } from 'src/channels/domain/channel';
 import { Injectable } from '@nestjs/common';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
-import { FilterChannelDto } from 'src/channels/dto/query-channel.dto';
-import { SortUserDto } from 'src/users/dto/query-user.dto';
+import {
+  FilterChannelDto,
+  SortChannelDto,
+} from 'src/channels/dto/query-channel.dto';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
+import { ChannelRepository } from '../channel.repository';
+import { User } from 'src/users/domain/user';
 
 @Injectable()
-export class ChannelRelationalRepository {
+export class ChannelRelationalRepository implements ChannelRepository {
   constructor(
     @InjectRepository(ChannelEntity)
     private readonly channelRepository: Repository<ChannelEntity>,
@@ -40,7 +44,7 @@ export class ChannelRelationalRepository {
     paginationOptions,
   }: {
     filterOptions?: FilterChannelDto | null;
-    sortOptions?: SortUserDto[] | null;
+    sortOptions?: SortChannelDto[] | null;
     paginationOptions: IPaginationOptions;
   }): Promise<Channel[]> {
     const where: FindOptionsWhere<ChannelEntity> = {};
@@ -86,6 +90,18 @@ export class ChannelRelationalRepository {
     );
 
     return ChannelMapper.toDomain(updatedChannel);
+  }
+
+  async addUsers(id: Channel['id'], users: User[]): Promise<void[]> {
+    const usersAddedPromises = users.map((user) => {
+      return this.channelRepository
+        .createQueryBuilder('channel')
+        .relation(ChannelEntity, 'members')
+        .of(id)
+        .add(user.id);
+    });
+
+    return Promise.all(usersAddedPromises);
   }
 
   async softDelete(id: Channel['id']): Promise<void> {

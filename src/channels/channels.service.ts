@@ -20,13 +20,15 @@ import {
   SortMessageDto,
 } from 'src/messages/dto/query-message.dto';
 import { FilterChannelDto, SortChannelDto } from './dto/query-channel.dto';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Injectable()
 export class ChannelsService {
   constructor(
     private readonly channelRepostory: ChannelRepository,
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
+    private readonly workspacesService: WorkspacesService,
   ) {}
 
   async createChannel(user: User, createChannelDto: CreateChannelDto) {
@@ -82,7 +84,7 @@ export class ChannelsService {
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
   }): Promise<User[]> {
-    return this.userService.findManyWithPagination({
+    return this.usersService.findManyWithPagination({
       filterOptions,
       sortOptions,
       paginationOptions,
@@ -104,6 +106,29 @@ export class ChannelsService {
       paginationOptions,
     });
   }
+
+  async addUsersToChannel(user: User, channelId: Channel['id'], users: User[]) {
+    const channel = await this.channelRepostory.findOne({ id: channelId });
+    if (!channel) {
+      throw new NotFoundException();
+    }
+    if (channel.owner.id !== user.id) {
+      throw new ForbiddenException();
+    }
+    const usersToAdd: User[] = [];
+    users.forEach((user) => {
+      if (
+        !this.workspacesService.checkUserMembership(
+          channel.workspace.id,
+          user.id,
+        )
+      ) {
+        usersToAdd.push(user);
+      }
+    });
+    await this.channelRepostory.addUsers(channelId, usersToAdd);
+  }
+
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {
