@@ -24,6 +24,7 @@ import { SubscribeDto } from './dto/subscribe.dto';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { ChannelsService } from 'src/channels/channels.service';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
+import { RoomType } from './enums/room-type.enum';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -61,7 +62,7 @@ export class EventsGateway {
     payload: SubscribeDto,
   ): Promise<EventReplyDto> {
     switch (payload.data.room_type) {
-      case 'workspace': {
+      case RoomType.Workspace: {
         const workspace = await this.workspacesService.checkUserMembership(
           payload.data.room_id,
           client.user.id,
@@ -78,10 +79,10 @@ export class EventsGateway {
           };
         }
 
-        payload.data.room_id = 'workspace' + payload.data.room_id;
+        payload.data.room_id = RoomType.Workspace + payload.data.room_id;
         break;
       }
-      case 'channel': {
+      case RoomType.Channel: {
         const channel = await this.channelsService.checkUserMembership(
           payload.data.room_id,
           client.user.id,
@@ -98,11 +99,11 @@ export class EventsGateway {
           };
         }
 
-        payload.data.room_id = 'channel' + payload.data.room_id;
+        payload.data.room_id = RoomType.Channel + payload.data.room_id;
         break;
       }
-      case 'user': {
-        payload.data.room_id = 'user' + payload.data.room_id;
+      case RoomType.User: {
+        payload.data.room_id = RoomType.User + payload.data.room_id;
         break;
       }
     }
