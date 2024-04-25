@@ -11,6 +11,7 @@ import {
   FilterChannelDto,
   SortChannelDto,
 } from 'src/channels/dto/query-channel.dto';
+import { User } from 'src/users/domain/user';
 
 export abstract class ChannelRepository {
   abstract create(
@@ -38,6 +39,11 @@ export abstract class ChannelRepository {
     id: Channel['id'],
     payload: DeepPartial<Channel>,
   ): Promise<Channel>;
+
+  abstract checkUserMembership(
+    channelId: Channel['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Channel>>;
 
   abstract findMessagesWithCursorPagination(
     id: Channel['id'],

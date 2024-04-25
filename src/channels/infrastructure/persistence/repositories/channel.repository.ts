@@ -11,6 +11,8 @@ import {
   SortChannelDto,
 } from 'src/channels/dto/query-channel.dto';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
+import { loadRelationships } from 'src/utils/load-relationships';
+import { User } from 'src/users/domain/user';
 
 @Injectable()
 export class ChannelRelationalRepository {
@@ -69,6 +71,21 @@ export class ChannelRelationalRepository {
 
     return entities.map((channel) => ChannelMapper.toDomain(channel));
   }
+  
+  async checkUserMembership(
+    channelId: Channel['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Channel>> {
+    return this.channelRepository.findOne({
+      where: {
+        id: channelId as number,
+        members: {
+          id: memberId as number,
+        },
+      },
+    });
+  }
+
   async update(id: Channel['id'], payload: Partial<Channel>): Promise<Channel> {
     const entity = await this.channelRepository.findOne({
       where: { id: Number(id) },
@@ -78,6 +95,7 @@ export class ChannelRelationalRepository {
       throw new Error('Channel not found');
     }
 
+    await loadRelationships(this.channelRepository, ['workspace'], [entity]);
     const updatedChannel = await this.channelRepository.save(
       this.channelRepository.create(
         ChannelMapper.toPersistence({
