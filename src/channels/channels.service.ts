@@ -44,11 +44,16 @@ export class ChannelsService {
   async getChannelById(user: User, id: Channel['id']) {
     const channel = await this.channelRepostory.findOne({ id });
 
+    console.log(channel);
     if (!channel) {
       throw new NotFoundException();
     }
 
-    if (!channel.members.find((member) => member.id === user.id)) {
+    const isMember = await this.channelRepostory.checkUserMembership(
+      channel.id,
+      user.id,
+    );
+    if (!isMember) {
       throw new ForbiddenException();
     }
 
