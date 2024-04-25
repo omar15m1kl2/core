@@ -1,4 +1,11 @@
-import { Injectable, UseGuards, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UseGuards,
+  Logger,
+  UsePipes,
+  UseFilters,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   SubscribeMessage,
@@ -16,6 +23,7 @@ import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { ChannelsService } from 'src/channels/channels.service';
+import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -23,6 +31,8 @@ import { ChannelsService } from 'src/channels/channels.service';
     origin: '*',
   },
 })
+@UsePipes(new ValidationPipe())
+@UseFilters(new WsCatchAllFilter())
 @UseGuards(WsJwtAuthGuard)
 @Injectable()
 export class EventsGateway {
