@@ -71,7 +71,7 @@ export class ChannelRelationalRepository {
 
     return entities.map((channel) => ChannelMapper.toDomain(channel));
   }
-  
+
   async checkUserMembership(
     channelId: Channel['id'],
     memberId: User['id'],
