@@ -20,7 +20,6 @@ import {
   SortMessageDto,
 } from 'src/messages/dto/query-message.dto';
 import { FilterChannelDto, SortChannelDto } from './dto/query-channel.dto';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Injectable()
 export class ChannelsService {
@@ -28,7 +27,6 @@ export class ChannelsService {
     private readonly channelRepostory: ChannelRepository,
     private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
-    private readonly workspacesService: WorkspacesService,
   ) {}
 
   async createChannel(user: User, createChannelDto: CreateChannelDto) {
@@ -51,7 +49,11 @@ export class ChannelsService {
       throw new NotFoundException();
     }
 
-    if (!channel.members.find((member) => member.id === user.id)) {
+    const isMember = await this.channelRepostory.checkUserMembership(
+      channel.id,
+      user.id,
+    );
+    if (!isMember) {
       throw new ForbiddenException();
     }
 
@@ -107,26 +109,26 @@ export class ChannelsService {
     });
   }
 
-  async addUsersToChannel(user: User, channelId: Channel['id'], users: User[]) {
-    const channel = await this.channelRepostory.findOne({ id: channelId });
-    if (!channel) {
-      throw new NotFoundException();
+  async addUsersToChannel(channelId: Channel['id'], users: User[]) {
+    const checkMembershipPromises = users.map((user) =>
+      this.channelRepostory
+        .checkUserMembership(channelId, user.id)
+        .then((isMember) => (isMember ? user : null)),
+    );
+
+    const usersToAdd: User[] = (
+      await Promise.all(checkMembershipPromises)
+    ).filter((user): user is User => user === null);
+
+    if (usersToAdd.length === 0) {
+      return;
     }
-    if (channel.owner.id !== user.id) {
-      throw new ForbiddenException();
-    }
-    const usersToAdd: User[] = [];
-    users.forEach((user) => {
-      if (
-        !this.workspacesService.checkUserMembership(
-          channel.workspace.id,
-          user.id,
-        )
-      ) {
-        usersToAdd.push(user);
-      }
+
+    const usersToAddPromises = usersToAdd.map((user) => {
+      return this.channelRepostory.addUser(channelId, user);
     });
-    await this.channelRepostory.addUsers(channelId, usersToAdd);
+
+    await Promise.all(usersToAddPromises);
   }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {
