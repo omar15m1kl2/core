@@ -71,6 +71,21 @@ export class ChannelRelationalRepository implements ChannelRepository {
 
     return entities.map((channel) => ChannelMapper.toDomain(channel));
   }
+
+  async checkUserMembership(
+    channelId: Channel['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Channel>> {
+    return this.channelRepository.findOne({
+      where: {
+        id: channelId as number,
+        members: {
+          id: memberId as number,
+        },
+      },
+    });
+  }
+
   async update(id: Channel['id'], payload: Partial<Channel>): Promise<Channel> {
     const entity = await this.channelRepository.findOne({
       where: { id: Number(id) },
@@ -92,16 +107,12 @@ export class ChannelRelationalRepository implements ChannelRepository {
     return ChannelMapper.toDomain(updatedChannel);
   }
 
-  async addUsers(id: Channel['id'], users: User[]): Promise<void[]> {
-    const usersAddedPromises = users.map((user) => {
-      return this.channelRepository
-        .createQueryBuilder('channel')
-        .relation(ChannelEntity, 'members')
-        .of(id)
-        .add(user.id);
-    });
-
-    return Promise.all(usersAddedPromises);
+  async addUser(id: Channel['id'], user: User): Promise<void> {
+    return this.channelRepository
+      .createQueryBuilder('channel')
+      .relation(ChannelEntity, 'members')
+      .of(id)
+      .add(user.id);
   }
 
   async softDelete(id: Channel['id']): Promise<void> {

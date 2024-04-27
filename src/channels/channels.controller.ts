@@ -21,7 +21,6 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { QueryUserDto } from '../users/dto/query-user.dto';
 import { infinityPagination } from '../utils/infinity-pagination';
 import { QueryMessageDto } from 'src/messages/dto/query-message.dto';
-import { AddUsersToChannelDto } from './dto/add-users-to-channel.dto';
 
 @ApiTags('Channels')
 @Controller({
@@ -127,20 +126,24 @@ export class ChannelsController {
     );
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
-  @Post(':id/addUser')
-  @ApiParam({
-    name: 'id',
-  })
-  @HttpCode(HttpStatus.CREATED)
-  addUserToChannel(
-    @Param('id') id: Channel['id'],
-    @Body() body: AddUsersToChannelDto,
-    @Request() request,
-  ) {
-    return this.channelsService.addUsersToChannel(request.user, id, body.Users);
-  }
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('jwt'))
+  // @Post(':id/addUser')
+  // @ApiParam({
+  //   name: 'id',
+  // })
+  // @HttpCode(HttpStatus.CREATED)
+  // addUserToChannel(
+  //   @Param('id') id: Channel['id'],
+  //   @Body() body: AddUsersToChannelDto,
+  //   @Request() request,
+  // ) {
+  //   return this.workspaceChannelService.addUsersToChannel(
+  //     request.user,
+  //     id,
+  //     body.Users,
+  //   );
+  // }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
