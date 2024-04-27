@@ -36,6 +36,7 @@ import { ChannelsModule } from './channels/channels.module';
 import { ThreadsModule } from './threads/threads.module';
 import { EventsModule } from './events/events.module';
 import { InvitesModule } from './invites/invites.module';
+import { WorkspaceChannelModule } from './workspace-channel/workspace-channel.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { InvitesModule } from './invites/invites.module';
     ThreadsModule,
     EventsModule,
     InvitesModule,
+    WorkspaceChannelModule,
   ],
   providers: [],
 })
