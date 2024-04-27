@@ -35,21 +35,29 @@ export class WorkspaceChannelService {
       return new ForbiddenException();
     }
 
+    const usersToAdd = await this.getWorkspaceMembers(users, workspaceId);
+    if (usersToAdd.length === 0) {
+      return;
+    }
+
+    await this.channelsService.addUsersToChannel(channelId, usersToAdd);
+  }
+
+  private async getWorkspaceMembers(
+    users: User[],
+    workspaceId: Workspace['id'],
+  ): Promise<User[]> {
     const checkMembershipPromises = users.map((user) =>
       this.workspacesService
         .checkUserMembership(workspaceId, user.id)
         .then((isMember) => (isMember ? user : null)),
     );
 
-    const usersToAdd: User[] = (
+    const workspaceMembers = (
       await Promise.all(checkMembershipPromises)
     ).filter((user): user is User => user !== null);
 
-    const uniqueArray = [...new Set(usersToAdd)];
-    if (uniqueArray.length === 0) {
-      return;
-    }
-    await this.channelsService.addUsersToChannel(channelId, uniqueArray);
+    return [...new Set(workspaceMembers)];
   }
 
   async getWorkspaceChannels({
