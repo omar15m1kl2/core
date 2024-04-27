@@ -55,9 +55,7 @@ export class EventsService {
       };
     }
 
-    client.server
-      .to('channel' + message.channel.id)
-      .emit('message_sent', message);
+    client.to('channel' + message.channel.id).emit('message_sent', message);
 
     return {
       status: 'OK',

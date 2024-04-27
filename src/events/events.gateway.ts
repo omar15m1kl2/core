@@ -16,12 +16,9 @@ import { WsJwtAuthGuard } from 'src/auth/ws-jwt-auth/ws-jwt-auth.guard';
 import { SocketAuthMiddleware } from 'src/auth/ws-jwt-auth/ws-jwt.middleware';
 import { AllConfigType } from 'src/config/config.type';
 import { Socket } from 'socket.io';
-import { MessagesService } from 'src/messages/messages.service';
 import { MessageSentDto } from './dto/message-sent.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscribeDto } from './dto/subscribe.dto';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { ChannelsService } from 'src/channels/channels.service';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 import { EventsService } from './events.service';
 
@@ -38,9 +35,6 @@ import { EventsService } from './events.service';
 export class EventsGateway {
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
-    private readonly messagesService: MessagesService,
-    private readonly workspacesService: WorkspacesService,
-    private readonly channelsService: ChannelsService,
     private readonly eventsService: EventsService,
   ) {}
   @WebSocketServer()
