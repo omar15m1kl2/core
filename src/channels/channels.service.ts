@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ChannelRepository } from './infrastructure/persistence/channel.repository';
@@ -112,33 +113,23 @@ export class ChannelsService {
   async addUsersToChannel(
     channelId: Channel['id'],
     users: User[],
-  ): Promise<void> {
-    const usersToAdd = await this.getNonMembers(users, channelId);
-
-    if (usersToAdd.length === 0) {
-      return;
-    }
-
-    const usersToAddPromises = usersToAdd.map((user) => {
-      return this.channelRepostory.addUser(channelId, user);
+  ): Promise<{ addedUsers: User[]; duplicateUsers: User[] }> {
+    const addedUsers: User[] = [];
+    const duplicateUsers: User[] = [];
+    const usersToAddPromises = users.map((user) => {
+      return this.channelRepostory
+        .addUser(channelId, user)
+        .then(() => {
+          addedUsers.push(user);
+        })
+        .catch((error) => {
+          duplicateUsers.push(user);
+          Logger.error(error);
+        });
     });
 
     await Promise.all(usersToAddPromises);
-  }
-
-  async getNonMembers(
-    users: User[],
-    channelId: Channel['id'],
-  ): Promise<User[]> {
-    const checkMembershipPromises = users.map((user) =>
-      this.channelRepostory
-        .checkUserMembership(channelId, user.id)
-        .then((isMember) => (isMember ? null : user)),
-    );
-
-    return (await Promise.all(checkMembershipPromises)).filter(
-      (user): user is User => user !== null,
-    );
+    return { addedUsers, duplicateUsers };
   }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {

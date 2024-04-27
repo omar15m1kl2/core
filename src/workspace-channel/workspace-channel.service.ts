@@ -40,7 +40,7 @@ export class WorkspaceChannelService {
       return;
     }
 
-    await this.channelsService.addUsersToChannel(channelId, usersToAdd);
+    return await this.channelsService.addUsersToChannel(channelId, usersToAdd);
   }
 
   private async getWorkspaceMembers(
