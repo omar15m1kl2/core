@@ -116,17 +116,16 @@ export class ChannelsService {
   ): Promise<{ addedUsers: User[]; duplicateUsers: User[] }> {
     const addedUsers: User[] = [];
     const duplicateUsers: User[] = [];
-    const usersToAddPromises = users.map((user) => {
-      return this.channelRepostory
-        .addUser(channelId, user)
-        .then(() => {
-          addedUsers.push(user);
-        })
-        .catch((error) => {
-          duplicateUsers.push(user);
-          Logger.error(error);
-        });
+    const usersToAddPromises = users.map(async (user) => {
+      try {
+        await this.channelRepostory.addUser(channelId, user);
+        addedUsers.push(user);
+      } catch (error) {
+        duplicateUsers.push(user);
+        Logger.error(error);
+      }
     });
+    console.log(usersToAddPromises);
 
     await Promise.all(usersToAddPromises);
     return { addedUsers, duplicateUsers };
