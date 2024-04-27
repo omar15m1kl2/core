@@ -1,8 +1,5 @@
 import { Message } from 'src/messages/domain/message';
 import { MessageEntity } from '../entities/message.entity';
-import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
-import { ChannelMapper } from 'src/channels/infrastructure/persistence/mappers/channel.mapper';
-import { WorkspaceMapper } from 'src/workspaces/infrastructure/persistence/mappers/workspace.mapper';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { ChannelEntity } from 'src/channels/infrastructure/persistence/entities/channel.entity';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
@@ -17,9 +14,15 @@ export class MessageMapper {
     message.draft = raw.draft;
     message.updatedAt = raw.updatedAt;
     message.deletedAt = raw.deletedAt;
-    message.sender = UserMapper.toDomain(raw.sender);
-    message.channel = ChannelMapper.toDomain(raw.channel);
-    message.workspace = WorkspaceMapper.toDomain(raw.workspace);
+    message.sender = {
+      id: raw.sender.id,
+      firstName: raw.sender.firstName,
+      photo: raw.sender.photo,
+    };
+    message.channel = {
+      id: raw.channel.id,
+    };
+    message.workspace = raw.workspace;
 
     return message;
   }

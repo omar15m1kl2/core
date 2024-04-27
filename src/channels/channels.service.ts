@@ -19,6 +19,7 @@ import {
   FilterMessageDto,
   SortMessageDto,
 } from 'src/messages/dto/query-message.dto';
+import { FilterChannelDto, SortChannelDto } from './dto/query-channel.dto';
 
 @Injectable()
 export class ChannelsService {
@@ -44,11 +45,16 @@ export class ChannelsService {
   async getChannelById(user: User, id: Channel['id']) {
     const channel = await this.channelRepostory.findOne({ id });
 
+    console.log(channel);
     if (!channel) {
       throw new NotFoundException();
     }
 
-    if (!channel.members.find((member) => member.id === user.id)) {
+    const isMember = await this.channelRepostory.checkUserMembership(
+      channel.id,
+      user.id,
+    );
+    if (!isMember) {
       throw new ForbiddenException();
     }
 
@@ -92,6 +98,21 @@ export class ChannelsService {
     return this.channelRepostory.checkUserMembership(workspaceId, memberId);
   }
 
+  findManyWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterChannelDto | null;
+    sortOptions?: SortChannelDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Channel[]> {
+    return this.channelRepostory.findManyWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
+  }
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {

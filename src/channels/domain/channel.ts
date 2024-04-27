@@ -22,7 +22,7 @@ export class Channel {
 
   messages: Message[];
 
-  workspace: Workspace;
+  workspace?: Workspace;
 
   createdAt: Date;
 

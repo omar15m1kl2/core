@@ -56,13 +56,13 @@ export class ChannelsController {
     return this.channelsService.getChannelById(request.user, id);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',
-    type: String,
-    required: true,
   })
+  @HttpCode(HttpStatus.OK)
   update(
     @Param('id') id: Channel['id'],
     @Body() updateChannelDto: UpdateChannelDto,
