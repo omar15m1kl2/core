@@ -31,12 +31,17 @@ export abstract class ChannelRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<Channel[]>;
 
+  abstract checkUserMembership(
+    channelId: Channel['id'],
+    memberId: User['id'],
+  ): Promise<NullableType<Channel>>;
+
   abstract update(
     id: Channel['id'],
     payload: DeepPartial<Channel>,
   ): Promise<Channel>;
 
-  abstract addUsers(id: Channel['id'], users: User[]): Promise<void[]>;
+  abstract addUser(id: Channel['id'], user: User): Promise<void>;
 
   abstract softDelete(id: Channel['id']): Promise<void>;
 }
