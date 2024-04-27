@@ -18,14 +18,8 @@ import { AddUsersToChannelDto } from 'src/channels/dto/add-users-to-channel.dto'
 import { Workspace } from 'src/workspaces/domain/workspace';
 import { QueryChannelDto } from 'src/channels/dto/query-channel.dto';
 import { infinityPagination } from 'src/utils/infinity-pagination';
-
-@ApiTags('Workspaces')
 @Controller({
-  path: 'workspces/:id/channels',
   version: '1',
-})
-@ApiParam({
-  name: 'id',
 })
 export class WorkspaceChannelController {
   constructor(
@@ -34,13 +28,17 @@ export class WorkspaceChannelController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Post(':channelId/addUser')
+  @ApiTags('Workspaces')
+  @Post('workspaces/:workspaceId/channels/:channelId/users')
+  @ApiParam({
+    name: 'workspaceId',
+  })
   @ApiParam({
     name: 'channelId',
   })
   @HttpCode(HttpStatus.CREATED)
   addUserToChannel(
-    @Param('id') workspaceId: Workspace['id'],
+    @Param('workspaceId') workspaceId: Workspace['id'],
     @Param('channelId') channelId: Channel['id'],
     @Body() body: AddUsersToChannelDto,
     @Request() request,
@@ -55,7 +53,8 @@ export class WorkspaceChannelController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Get()
+  @ApiTags('Workspaces')
+  @Get('workspaces/:id/channels')
   @ApiQuery({
     name: 'page',
     required: false,
