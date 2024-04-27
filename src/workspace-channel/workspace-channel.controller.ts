@@ -24,6 +24,9 @@ import { infinityPagination } from 'src/utils/infinity-pagination';
   path: 'workspces/:id/channels',
   version: '1',
 })
+@ApiParam({
+  name: 'id',
+})
 export class WorkspaceChannelController {
   constructor(
     private readonly workspaceChannelService: WorkspaceChannelService,
@@ -42,8 +45,6 @@ export class WorkspaceChannelController {
     @Body() body: AddUsersToChannelDto,
     @Request() request,
   ) {
-    console.log('id', workspaceId);
-    console.log('channelId', channelId);
     return this.workspaceChannelService.addUsersToChannel(
       request.user,
       workspaceId,

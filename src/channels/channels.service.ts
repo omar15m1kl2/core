@@ -109,16 +109,11 @@ export class ChannelsService {
     });
   }
 
-  async addUsersToChannel(channelId: Channel['id'], users: User[]) {
-    const checkMembershipPromises = users.map((user) =>
-      this.channelRepostory
-        .checkUserMembership(channelId, user.id)
-        .then((isMember) => (isMember ? user : null)),
-    );
-
-    const usersToAdd: User[] = (
-      await Promise.all(checkMembershipPromises)
-    ).filter((user): user is User => user === null);
+  async addUsersToChannel(
+    channelId: Channel['id'],
+    users: User[],
+  ): Promise<void> {
+    const usersToAdd = await this.getNonMembers(users, channelId);
 
     if (usersToAdd.length === 0) {
       return;
@@ -129,6 +124,21 @@ export class ChannelsService {
     });
 
     await Promise.all(usersToAddPromises);
+  }
+
+  async getNonMembers(
+    users: User[],
+    channelId: Channel['id'],
+  ): Promise<User[]> {
+    const checkMembershipPromises = users.map((user) =>
+      this.channelRepostory
+        .checkUserMembership(channelId, user.id)
+        .then((isMember) => (isMember ? null : user)),
+    );
+
+    return (await Promise.all(checkMembershipPromises)).filter(
+      (user): user is User => user !== null,
+    );
   }
 
   async softDelete(user: User, id: Channel['id']): Promise<void> {
