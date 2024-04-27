@@ -11,11 +11,12 @@ import {
   SortChannelDto,
 } from 'src/channels/dto/query-channel.dto';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
+import { ChannelRepository } from '../channel.repository';
 import { loadRelationships } from 'src/utils/load-relationships';
 import { User } from 'src/users/domain/user';
 
 @Injectable()
-export class ChannelRelationalRepository {
+export class ChannelRelationalRepository implements ChannelRepository {
   constructor(
     @InjectRepository(ChannelEntity)
     private readonly channelRepository: Repository<ChannelEntity>,
@@ -106,6 +107,14 @@ export class ChannelRelationalRepository {
     );
 
     return ChannelMapper.toDomain(updatedChannel);
+  }
+
+  async addUser(id: Channel['id'], user: User): Promise<void> {
+    return this.channelRepository
+      .createQueryBuilder('channel')
+      .relation(ChannelEntity, 'members')
+      .of(id)
+      .add(user.id);
   }
 
   async softDelete(id: Channel['id']): Promise<void> {

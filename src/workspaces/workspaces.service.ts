@@ -18,12 +18,6 @@ import { MessagesService } from '../messages/messages.service';
 import { InviteToWorkspaceDto } from './dto/invite-to-workspace.dto';
 import { InvitesService } from 'src/invites/invites.service';
 import { FilesService } from 'src/files/files.service';
-import { Channel } from 'src/channels/domain/channel';
-import { ChannelsService } from 'src/channels/channels.service';
-import {
-  FilterChannelDto,
-  SortChannelDto,
-} from 'src/channels/dto/query-channel.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -31,7 +25,6 @@ export class WorkspacesService {
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
-    private readonly channelsService: ChannelsService,
     private readonly invitesService: InvitesService,
     private readonly filesService: FilesService,
   ) {}
@@ -98,22 +91,6 @@ export class WorkspacesService {
     });
   }
 
-  async getWorkspaceChannels({
-    filterOptions,
-    sortOptions,
-    paginationOptions,
-  }: {
-    filterOptions?: FilterChannelDto | null;
-    sortOptions?: SortChannelDto[] | null;
-    paginationOptions: IPaginationOptions;
-  }): Promise<Channel[]> {
-    return this.channelsService.findManyWithPagination({
-      filterOptions,
-      sortOptions,
-      paginationOptions,
-    });
-  }
-
   async findUserThreadsWithPagination(
     workspaceId: Workspace['id'],
     user: User,
@@ -166,6 +143,13 @@ export class WorkspacesService {
       sender,
       inviteDto.emails,
     );
+  }
+
+  async checkUserMembership(
+    workspaceId: Workspace['id'],
+    memberId: User['id'],
+  ) {
+    return this.workspaceRepository.checkUserMembership(workspaceId, memberId);
   }
 
   async joinWorkspaceInvite(

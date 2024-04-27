@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ChannelRepository } from './infrastructure/persistence/channel.repository';
@@ -25,7 +26,7 @@ import { FilterChannelDto, SortChannelDto } from './dto/query-channel.dto';
 export class ChannelsService {
   constructor(
     private readonly channelRepostory: ChannelRepository,
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
     private readonly messagesService: MessagesService,
   ) {}
 
@@ -87,7 +88,7 @@ export class ChannelsService {
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
   }): Promise<User[]> {
-    return this.userService.findManyWithPagination({
+    return this.usersService.findManyWithPagination({
       filterOptions,
       sortOptions,
       paginationOptions,
@@ -109,6 +110,28 @@ export class ChannelsService {
       paginationOptions,
     });
   }
+
+  async addUsersToChannel(
+    channelId: Channel['id'],
+    users: User[],
+  ): Promise<{ addedUsers: User[]; duplicateUsers: User[] }> {
+    const addedUsers: User[] = [];
+    const duplicateUsers: User[] = [];
+    const usersToAddPromises = users.map(async (user) => {
+      try {
+        await this.channelRepostory.addUser(channelId, user);
+        addedUsers.push(user);
+      } catch (error) {
+        duplicateUsers.push(user);
+        Logger.error(error);
+      }
+    });
+    console.log(usersToAddPromises);
+
+    await Promise.all(usersToAddPromises);
+    return { addedUsers, duplicateUsers };
+  }
+
   async softDelete(user: User, id: Channel['id']): Promise<void> {
     const channel = await this.channelRepostory.findOne({ id });
     if (!channel) {
