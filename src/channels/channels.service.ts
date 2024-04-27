@@ -46,6 +46,7 @@ export class ChannelsService {
   async getChannelById(user: User, id: Channel['id']) {
     const channel = await this.channelRepostory.findOne({ id });
 
+    console.log(channel);
     if (!channel) {
       throw new NotFoundException();
     }

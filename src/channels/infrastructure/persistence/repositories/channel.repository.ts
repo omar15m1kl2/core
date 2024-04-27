@@ -12,6 +12,7 @@ import {
 } from 'src/channels/dto/query-channel.dto';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { ChannelRepository } from '../channel.repository';
+import { loadRelationships } from 'src/utils/load-relationships';
 import { User } from 'src/users/domain/user';
 
 @Injectable()
@@ -95,6 +96,7 @@ export class ChannelRelationalRepository implements ChannelRepository {
       throw new Error('Channel not found');
     }
 
+    await loadRelationships(this.channelRepository, ['workspace'], [entity]);
     const updatedChannel = await this.channelRepository.save(
       this.channelRepository.create(
         ChannelMapper.toPersistence({
