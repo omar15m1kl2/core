@@ -26,7 +26,6 @@ import { Message } from '../messages/domain/message';
 import { InfinityPaginationResultType } from '../utils/types/infinity-pagination-result.type';
 import { InviteToWorkspaceDto } from './dto/invite-to-workspace.dto';
 import { Invite } from 'src/invites/domain/invite';
-import { QueryChannelDto } from 'src/channels/dto/query-channel.dto';
 
 @ApiTags('Workspaces')
 @Controller({
@@ -100,48 +99,6 @@ export class WorkspacesController {
       await this.service.getWorkspaceUsers({
         filterOptions: {
           workspaceId,
-          ...query?.filters,
-        },
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
-  @Get(':id/channels')
-  @ApiQuery({
-    name: 'page',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-  })
-  @ApiParam({
-    name: 'id',
-  })
-  @HttpCode(HttpStatus.OK)
-  async getWorkspaceChannels(
-    @Param('id') workspaceId: Workspace['id'],
-    @Request() request,
-    @Query() query: QueryChannelDto,
-  ) {
-    const page = query.page ?? 1;
-    let limit = query.limit ?? 10;
-    if (limit > 30) {
-      limit = 30;
-    }
-    return infinityPagination(
-      await this.service.getWorkspaceChannels({
-        filterOptions: {
-          workspaceId,
-          userId: request.user.id,
           ...query?.filters,
         },
         sortOptions: query?.sort,
