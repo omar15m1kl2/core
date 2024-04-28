@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  Logger,
 } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import {
@@ -15,6 +16,8 @@ import {
 export class WsCatchAllFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
     const socket: Socket = host.switchToWs().getClient();
+
+    Logger.error(exception.message, exception.stack, 'WsCatchAllFilter');
 
     if (exception instanceof BadRequestException) {
       const exceptionData = exception.getResponse();
