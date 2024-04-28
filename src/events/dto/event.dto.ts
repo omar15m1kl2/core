@@ -29,6 +29,6 @@ export class EventDto {
   event: string;
 
   @IsOptional()
-  @ValidateNested({ each: true })
+  @ValidateNested()
   broadcast: BroadcastDto;
 }
