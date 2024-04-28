@@ -50,10 +50,16 @@ export class WorkspacesController {
     groups: ['me'],
   })
   @HttpCode(HttpStatus.OK)
-  getWorkspaces(@Request() request, @Query() query: any) {
+  async getWorkspaces(@Request() request, @Query() query: any) {
     query.page = query.page ?? 1;
     query.limit = query.limit ?? 10;
-    return this.service.getWorkspaces(request.user, query);
+    return infinityPagination(
+      await this.service.getWorkspaces(request.user, query),
+      {
+        page: query.page,
+        limit: query.limit,
+      },
+    );
   }
 
   @ApiBearerAuth()
