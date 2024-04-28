@@ -74,14 +74,16 @@ export class EventsService {
   ): Promise<EventReplyDto> {
     await this.messagesService.softDelete(client.user, payload.id);
 
+    console.log('Deleting message', payload);
+
     const deletedMessage = {
       id: payload.id,
-      channelId: payload.channelId,
+      channelId: payload.broadcast.channel_id,
     };
 
     client
-      .to('channel' + payload.channelId)
-      .emit('message_deleted', deletedMessage);
+      .to('channel' + payload.broadcast.channel_id)
+      .emit(Events.MESSAGE_DELETED, deletedMessage);
 
     return {
       status: 'OK',

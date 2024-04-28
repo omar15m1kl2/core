@@ -10,16 +10,12 @@ import { User } from 'src/users/domain/user';
 import { Workspace } from 'src/workspaces/domain/workspace';
 
 export class BroadcastDto {
-  @IsOptional()
   omit_users: User['id'][];
 
-  @IsOptional()
   user_id: User['id'];
 
-  @IsOptional()
   channel_id: Channel['id'];
 
-  @IsOptional()
   workspace_id: Workspace['id'];
 }
 
@@ -32,6 +28,7 @@ export class EventDto {
   @IsString()
   event: string;
 
+  @IsOptional()
   @ValidateNested({ each: true })
-  broadcast?: BroadcastDto;
+  broadcast: BroadcastDto;
 }

@@ -62,7 +62,7 @@ export class EventsGateway {
     return this.eventsService.handleMessageSent(client, payload);
   }
 
-  @SubscribeMessage('message_deleted')
+  @SubscribeMessage(Events.MESSAGE_DELETED)
   async handleMessageDeleted(
     client: any,
     payload: MessageDeletedDto,
