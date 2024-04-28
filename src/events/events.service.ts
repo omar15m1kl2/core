@@ -89,7 +89,9 @@ export class EventsService {
       };
     }
 
-    client.to('channel' + message.channel.id).emit('message_updated', message);
+    client
+      .to('channel' + message.channel.id)
+      .emit(Events.MESSAGE_UPDATED, message);
 
     return {
       status: 'OK',

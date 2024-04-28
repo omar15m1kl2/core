@@ -62,7 +62,7 @@ export class EventsGateway {
     return this.eventsService.handleMessageSent(client, payload);
   }
 
-  @SubscribeMessage('message_updated')
+  @SubscribeMessage(Events.MESSAGE_UPDATED)
   async handleMessageUpdated(
     client: any,
     payload: MessageUpdatedDto,
