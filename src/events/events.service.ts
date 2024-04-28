@@ -7,6 +7,7 @@ import { EventReplyDto } from './dto/event-reply.dto';
 import { MessageSentDto } from './dto/message-sent.dto';
 import { RoomType } from './enums/room-type.enum';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
+import { Events } from './enums/events.enum';
 
 @Injectable()
 export class EventsService {
@@ -56,7 +57,9 @@ export class EventsService {
       };
     }
 
-    client.to('channel' + message.channel.id).emit('message_sent', message);
+    client
+      .to('channel' + message.channel.id)
+      .emit(Events.MESSAGE_SENT, message);
 
     return {
       status: 'OK',
