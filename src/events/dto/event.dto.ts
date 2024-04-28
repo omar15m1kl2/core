@@ -1,7 +1,6 @@
 import {
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -28,7 +27,6 @@ export class EventDto {
   @IsString()
   event: string;
 
-  @IsOptional()
   @ValidateNested()
   broadcast: BroadcastDto;
 }
