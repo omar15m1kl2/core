@@ -6,6 +6,7 @@ import { SubscriptionDto } from './dto/subscribe.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { MessageSentDto } from './dto/message-sent.dto';
 import { RoomType } from './enums/room-type.enum';
+import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
 
@@ -154,6 +155,30 @@ export class EventsService {
     };
   }
 
+  async handleMessageDeleted(
+    client: any,
+    payload: MessageDeletedDto,
+  ): Promise<EventReplyDto> {
+    await this.messagesService.softDelete(client.user, payload.id);
+
+    const deletedMessage = {
+      id: payload.id,
+      channelId: payload.broadcast.channel_id,
+    };
+
+    client
+      .to('channel' + payload.broadcast.channel_id)
+      .emit(Events.MESSAGE_DELETED, deletedMessage);
+
+    return {
+      status: 'OK',
+      data: {
+        message_id: payload.id,
+        message: 'Message successfully deleted',
+      },
+      seq_reply: payload.seq,
+    };
+  }
   async handleMessageUpdated(
     client: any,
     payload: MessageUpdatedDto,

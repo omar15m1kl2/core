@@ -21,6 +21,7 @@ import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscriptionDto } from './dto/subscribe.dto';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 import { EventsService } from './events.service';
+import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
 
@@ -68,6 +69,14 @@ export class EventsGateway {
     payload: MessageSentDto,
   ): Promise<EventReplyDto> {
     return this.eventsService.handleMessageSent(client, payload);
+  }
+
+  @SubscribeMessage(Events.MESSAGE_DELETED)
+  async handleMessageDeleted(
+    client: any,
+    payload: MessageDeletedDto,
+  ): Promise<EventReplyDto> {
+    return this.eventsService.handleMessageDeleted(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_UPDATED)

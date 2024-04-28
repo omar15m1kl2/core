@@ -1,7 +1,7 @@
+import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -10,16 +10,12 @@ import { User } from 'src/users/domain/user';
 import { Workspace } from 'src/workspaces/domain/workspace';
 
 export class BroadcastDto {
-  @IsOptional()
   omit_users: User['id'][];
 
-  @IsOptional()
   user_id: User['id'];
 
-  @IsOptional()
   channel_id: Channel['id'];
 
-  @IsOptional()
   workspace_id: Workspace['id'];
 }
 
@@ -32,6 +28,7 @@ export class EventDto {
   @IsString()
   event: string;
 
-  @ValidateNested({ each: true })
-  broadcast?: BroadcastDto;
+  @ValidateNested()
+  @Type(() => BroadcastDto)
+  broadcast: BroadcastDto;
 }
