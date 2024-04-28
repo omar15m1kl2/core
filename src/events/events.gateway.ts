@@ -24,6 +24,7 @@ import { EventsService } from './events.service';
 import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
+import { ChannelCreatedDto } from './dto/channel-created.dto';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -85,5 +86,13 @@ export class EventsGateway {
     payload: MessageUpdatedDto,
   ): Promise<EventReplyDto> {
     return this.eventsService.messageUpdated(client, payload);
+  }
+
+  @SubscribeMessage(Events.CHANNEL_CREATED)
+  async channelCreated(
+    client: any,
+    payload: ChannelCreatedDto,
+  ): Promise<EventReplyDto> {
+    return this.eventsService.channelCreated(client, payload);
   }
 }

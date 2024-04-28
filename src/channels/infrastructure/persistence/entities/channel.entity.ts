@@ -16,6 +16,7 @@ import { ChannelTypeEntity } from '../../../../channel-types/infrastructure/pers
 import { UserEntity } from '../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { WorkspaceEntity } from '../../../../workspaces/infrastructure/persistence/entities/workspace.entity';
 import { MessageEntity } from '../../../../messages/infrastructure/persistence/entities/message.entity';
+import { IsDefined } from 'class-validator';
 @Entity({
   name: 'channel',
 })
@@ -53,6 +54,7 @@ export class ChannelEntity extends EntityRelationalHelper implements Channel {
   @DeleteDateColumn()
   deletedAt: Date;
 
+  @IsDefined()
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.channels)
-  workspace?: WorkspaceEntity;
+  workspace: WorkspaceEntity;
 }

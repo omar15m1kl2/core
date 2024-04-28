@@ -9,6 +9,7 @@ import { RoomType } from './enums/room-type.enum';
 import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
+import { ChannelCreatedDto } from './dto/channel-created.dto';
 
 @Injectable()
 export class EventsService {
@@ -207,6 +208,37 @@ export class EventsService {
     return {
       status: 'OK',
       data: { message },
+      seq_reply: payload.seq,
+    };
+  }
+
+  async channelCreated(
+    client: any,
+    payload: ChannelCreatedDto,
+  ): Promise<EventReplyDto> {
+    const channel = await this.channelsService.createChannel(
+      client.user,
+      payload.data,
+    );
+
+    if (!channel) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '500',
+          message: 'Internal Server Error',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    client
+      .to('workspace' + channel.workspace.id)
+      .emit(Events.CHANNEL_CREATED, channel);
+
+    return {
+      status: 'OK',
+      data: { channel },
       seq_reply: payload.seq,
     };
   }
