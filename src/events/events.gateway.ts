@@ -21,6 +21,7 @@ import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 import { EventsService } from './events.service';
+import { MessageDeletedDto } from './dto/message-deleted.dto';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -58,5 +59,13 @@ export class EventsGateway {
     payload: MessageSentDto,
   ): Promise<EventReplyDto> {
     return this.eventsService.handleMessageSent(client, payload);
+  }
+
+  @SubscribeMessage('message_deleted')
+  async handleMessageDeleted(
+    client: any,
+    payload: MessageDeletedDto,
+  ): Promise<EventReplyDto> {
+    return this.eventsService.handleMessageDeleted(client, payload);
   }
 }

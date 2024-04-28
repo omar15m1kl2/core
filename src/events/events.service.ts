@@ -6,6 +6,7 @@ import { SubscribeDto } from './dto/subscribe.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { MessageSentDto } from './dto/message-sent.dto';
 import { RoomType } from './enums/room-type.enum';
+import { MessageDeletedDto } from './dto/message-deleted.dto';
 
 @Injectable()
 export class EventsService {
@@ -60,6 +61,31 @@ export class EventsService {
     return {
       status: 'OK',
       data: { message },
+      seq_reply: payload.seq,
+    };
+  }
+
+  async handleMessageDeleted(
+    client: any,
+    payload: MessageDeletedDto,
+  ): Promise<EventReplyDto> {
+    await this.messagesService.softDelete(client.user, payload.id);
+
+    const deletedMessage = {
+      id: payload.id,
+      channelId: payload.channelId,
+    };
+
+    client
+      .to('channel' + payload.channelId)
+      .emit('message_deleted', deletedMessage);
+
+    return {
+      status: 'OK',
+      data: {
+        message_id: payload.id,
+        message: 'Message successfully deleted',
+      },
       seq_reply: payload.seq,
     };
   }
