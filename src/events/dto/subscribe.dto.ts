@@ -10,7 +10,7 @@ class DataDto {
   room_type: RoomType;
 }
 
-export class SubscribeDto extends EventDto {
+export class SubscriptionDto extends EventDto {
   @ValidateNested()
   @Type(() => DataDto)
   data: DataDto;

@@ -18,7 +18,7 @@ import { AllConfigType } from 'src/config/config.type';
 import { Socket } from 'socket.io';
 import { MessageSentDto } from './dto/message-sent.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
-import { SubscribeDto } from './dto/subscribe.dto';
+import { SubscriptionDto } from './dto/subscribe.dto';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 import { EventsService } from './events.service';
 import { Events } from './enums/events.enum';
@@ -48,9 +48,17 @@ export class EventsGateway {
   @SubscribeMessage(Events.SUBSCRIBE)
   async handleSubscribe(
     client: any,
-    payload: SubscribeDto,
+    payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
     return this.eventsService.handleSubscribe(client, payload);
+  }
+
+  @SubscribeMessage(Events.UNSUBSCRIBE)
+  async handleUnsubscribe(
+    client: any,
+    payload: SubscriptionDto,
+  ): Promise<EventReplyDto> {
+    return this.eventsService.handleUnsubscribe(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_SENT)
