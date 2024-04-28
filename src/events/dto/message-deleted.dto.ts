@@ -13,7 +13,7 @@ export class MessageDeletedDto extends EventDto {
   @IsNotEmpty()
   id: Message['id'];
 
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => MessageDeletedBroadcastDto)
   broadcast: MessageDeletedBroadcastDto;
 }
