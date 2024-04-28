@@ -48,7 +48,7 @@ export class EventsGateway {
   }
 
   @SubscribeMessage(Events.SUBSCRIBE)
-  async handleSubscribe(
+  async subscribe(
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
@@ -56,34 +56,34 @@ export class EventsGateway {
   }
 
   @SubscribeMessage(Events.UNSUBSCRIBE)
-  async handleUnsubscribe(
+  async unsubscribe(
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.handleUnsubscribe(client, payload);
+    return this.eventsService.unsubscribe(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_SENT)
-  async handleMessageSent(
+  async messageSent(
     client: any,
     payload: MessageSentDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.handleMessageSent(client, payload);
+    return this.eventsService.messageSent(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_DELETED)
-  async handleMessageDeleted(
+  async messageDeleted(
     client: any,
     payload: MessageDeletedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.handleMessageDeleted(client, payload);
+    return this.eventsService.messageDeleted(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_UPDATED)
-  async handleMessageUpdated(
+  async messageUpdated(
     client: any,
     payload: MessageUpdatedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.handleMessageUpdated(client, payload);
+    return this.eventsService.messageUpdated(client, payload);
   }
 }

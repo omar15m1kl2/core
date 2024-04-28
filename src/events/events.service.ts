@@ -91,7 +91,7 @@ export class EventsService {
     return handler();
   }
 
-  async handleUnsubscribe(
+  async unsubscribe(
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
@@ -124,7 +124,7 @@ export class EventsService {
     return handler();
   }
 
-  async handleMessageSent(
+  async messageSent(
     client: any,
     payload: MessageSentDto,
   ): Promise<EventReplyDto> {
@@ -155,7 +155,7 @@ export class EventsService {
     };
   }
 
-  async handleMessageDeleted(
+  async messageDeleted(
     client: any,
     payload: MessageDeletedDto,
   ): Promise<EventReplyDto> {
@@ -179,7 +179,7 @@ export class EventsService {
       seq_reply: payload.seq,
     };
   }
-  async handleMessageUpdated(
+  async messageUpdated(
     client: any,
     payload: MessageUpdatedDto,
   ): Promise<EventReplyDto> {
