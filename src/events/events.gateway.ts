@@ -21,6 +21,7 @@ import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 import { EventsService } from './events.service';
+import { Events } from './enums/events.enum';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -44,7 +45,7 @@ export class EventsGateway {
     client.use(SocketAuthMiddleware(this.configService) as any);
   }
 
-  @SubscribeMessage('subscribe')
+  @SubscribeMessage(Events.SUBSCRIBE)
   async handleSubscribe(
     client: any,
     payload: SubscribeDto,
@@ -52,7 +53,7 @@ export class EventsGateway {
     return this.eventsService.handleSubscribe(client, payload);
   }
 
-  @SubscribeMessage('message_sent')
+  @SubscribeMessage(Events.MESSAGE_SENT)
   async handleMessageSent(
     client: any,
     payload: MessageSentDto,
