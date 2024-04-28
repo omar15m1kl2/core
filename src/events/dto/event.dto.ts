@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
@@ -28,5 +29,6 @@ export class EventDto {
   event: string;
 
   @ValidateNested()
+  @Type(() => BroadcastDto)
   broadcast: BroadcastDto;
 }
