@@ -43,6 +43,10 @@ export class EventsService {
 
     payload.data.room_id = payload.data.room_type + payload.data.room_id;
     client[action](payload.data.room_id);
+    // console.log(
+    //   'number of users in room',
+    //   client.adapter.rooms.get(payload.data.room_id),
+    // );
 
     return {
       status: 'OK',
