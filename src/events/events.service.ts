@@ -16,16 +16,69 @@ export class EventsService {
     private readonly messagesService: MessagesService,
   ) {}
 
+  private async handleSubscription(
+    client: any,
+    payload: SubscriptionDto,
+    action: 'join' | 'leave',
+    successMessage: string,
+    service?: any,
+  ): Promise<EventReplyDto> {
+    const entity = await service?.checkUserMembership(
+      payload.data.room_id,
+      client.user.id,
+    );
+
+    if (!entity) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '404',
+          message: 'Forbidden',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    payload.data.room_id = payload.data.room_type + payload.data.room_id;
+    client[action](payload.data.room_id);
+    // console.log(
+    //   'number of users in room',
+    //   client.adapter.rooms.get(payload.data.room_id),
+    // );
+
+    return {
+      status: 'OK',
+      data: {
+        room_id: payload.data.room_id,
+        message: successMessage,
+      },
+      seq_reply: payload.seq,
+    };
+  }
+
   async handleSubscribe(
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
     const handlers = {
       [RoomType.Workspace]: async () =>
-        this.handleWorkspaceSubscribe(client, payload),
+        this.handleSubscription(
+          client,
+          payload,
+          'join',
+          'Subscribed',
+          this.workspacesService,
+        ),
       [RoomType.Channel]: async () =>
-        this.handleChannelSubscribe(client, payload),
-      [RoomType.User]: async () => this.handleUserSubscribe(client, payload),
+        this.handleSubscription(
+          client,
+          payload,
+          'join',
+          'Subscribed',
+          this.channelsService,
+        ),
+      [RoomType.User]: async () =>
+        this.handleSubscription(client, payload, 'join', 'Subscribed', null),
     };
 
     const handler = handlers[payload.data.room_type];
@@ -42,10 +95,23 @@ export class EventsService {
   ): Promise<EventReplyDto> {
     const handlers = {
       [RoomType.Workspace]: async () =>
-        this.handleWorkspaceUnsubscribe(client, payload),
+        this.handleSubscription(
+          client,
+          payload,
+          'leave',
+          'Unsubscribed',
+          this.workspacesService,
+        ),
       [RoomType.Channel]: async () =>
-        this.handleChannelUnsubscribe(client, payload),
-      [RoomType.User]: async () => this.handleUserUnsubscribe(client, payload),
+        this.handleSubscription(
+          client,
+          payload,
+          'leave',
+          'Unsubscribed',
+          this.channelsService,
+        ),
+      [RoomType.User]: async () =>
+        this.handleSubscription(client, payload, 'leave', 'Unsubscribed', null),
     };
 
     const handler = handlers[payload.data.room_type];
@@ -54,89 +120,6 @@ export class EventsService {
     }
 
     return handler();
-  }
-
-  private async handleWorkspaceUnsubscribe(
-    client: any,
-    payload: SubscriptionDto,
-  ): Promise<EventReplyDto> {
-    const workspace = await this.workspacesService.checkUserMembership(
-      payload.data.room_id,
-      client.user.id,
-    );
-
-    if (!workspace) {
-      return {
-        status: 'FAILED',
-        error: {
-          id: '404',
-          message: 'Forbidden',
-        },
-        seq_reply: payload.seq,
-      };
-    }
-
-    payload.data.room_id = RoomType.Workspace + payload.data.room_id;
-    client.leave(payload.data.room_id);
-
-    return {
-      status: 'OK',
-      data: {
-        room_id: payload.data.room_id,
-        message: 'Unsubscribed',
-      },
-      seq_reply: payload.seq,
-    };
-  }
-
-  private async handleChannelUnsubscribe(
-    client: any,
-    payload: SubscriptionDto,
-  ): Promise<EventReplyDto> {
-    const channel = await this.channelsService.checkUserMembership(
-      payload.data.room_id,
-      client.user.id,
-    );
-
-    if (!channel) {
-      return {
-        status: 'FAILED',
-        error: {
-          id: '404',
-          message: 'Forbidden',
-        },
-        seq_reply: payload.seq,
-      };
-    }
-
-    payload.data.room_id = RoomType.Channel + payload.data.room_id;
-    client.leave(payload.data.room_id);
-
-    return {
-      status: 'OK',
-      data: {
-        room_id: payload.data.room_id,
-        message: 'Unsubscribed',
-      },
-      seq_reply: payload.seq,
-    };
-  }
-
-  private handleUserUnsubscribe(
-    client: any,
-    payload: SubscriptionDto,
-  ): Promise<EventReplyDto> {
-    payload.data.room_id = RoomType.User + payload.data.room_id;
-    client.leave(payload.data.room_id);
-
-    return Promise.resolve({
-      status: 'OK',
-      data: {
-        room_id: payload.data.room_id,
-        message: 'Unsubscribed',
-      },
-      seq_reply: payload.seq,
-    });
   }
 
   async handleMessageSent(
@@ -168,88 +151,5 @@ export class EventsService {
       data: { message },
       seq_reply: payload.seq,
     };
-  }
-
-  private async handleWorkspaceSubscribe(
-    client: any,
-    payload: SubscriptionDto,
-  ): Promise<EventReplyDto> {
-    const workspace = await this.workspacesService.checkUserMembership(
-      payload.data.room_id,
-      client.user.id,
-    );
-
-    if (!workspace) {
-      return {
-        status: 'FAILED',
-        error: {
-          id: '404',
-          message: 'Forbidden',
-        },
-        seq_reply: payload.seq,
-      };
-    }
-
-    payload.data.room_id = RoomType.Workspace + payload.data.room_id;
-    client.join(payload.data.room_id);
-
-    return {
-      status: 'OK',
-      data: {
-        room_id: payload.data.room_id,
-        message: 'Subscribed',
-      },
-      seq_reply: payload.seq,
-    };
-  }
-
-  private async handleChannelSubscribe(
-    client: any,
-    payload: SubscriptionDto,
-  ): Promise<EventReplyDto> {
-    const channel = await this.channelsService.checkUserMembership(
-      payload.data.room_id,
-      client.user.id,
-    );
-
-    if (!channel) {
-      return {
-        status: 'FAILED',
-        error: {
-          id: '404',
-          message: 'Forbidden',
-        },
-        seq_reply: payload.seq,
-      };
-    }
-
-    payload.data.room_id = RoomType.Channel + payload.data.room_id;
-    client.join(payload.data.room_id);
-
-    return {
-      status: 'OK',
-      data: {
-        room_id: payload.data.room_id,
-        message: 'Subscribed',
-      },
-      seq_reply: payload.seq,
-    };
-  }
-
-  private handleUserSubscribe(
-    client: any,
-    payload: SubscriptionDto,
-  ): Promise<EventReplyDto> {
-    payload.data.room_id = RoomType.User + payload.data.room_id;
-    client.join(payload.data.room_id);
-
-    return Promise.resolve({
-      status: 'OK',
-      data: {
-        room_id: payload.data.room_id,
-        message: 'Subscribed',
-      },
-      seq_reply: payload.seq,
-    });
   }
 }
