@@ -99,7 +99,7 @@ export class MessageRelationalRepository implements MessageRepository {
       message = await this.messageRepository.findOne({
         where: {
           channel: {
-            id: channelId,
+            id: channelId as number,
           },
         },
         order: {

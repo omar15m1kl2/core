@@ -8,7 +8,7 @@ import { IsDefined } from 'class-validator';
 export class Channel {
   @ApiProperty({ example: 1 })
   @IsDefined()
-  id: number;
+  id: number | string;
 
   owner: User;
 
