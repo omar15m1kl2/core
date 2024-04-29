@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
@@ -120,9 +124,20 @@ export class ChannelsEventService {
       };
     }
 
-    client
-      .to('channel' + payload.broadcast.channel_id)
-      .emit(Events.USERS_ADDED, result);
+    if (
+      !(
+        result instanceof NotFoundException ||
+        result instanceof ForbiddenException
+      )
+    ) {
+      const { addedUsers } = result;
+
+      if (addedUsers.length > 0) {
+        client
+          .to('channel' + payload.broadcast.channel_id)
+          .emit(Events.USERS_ADDED, addedUsers);
+      }
+    }
 
     return {
       status: 'OK',
