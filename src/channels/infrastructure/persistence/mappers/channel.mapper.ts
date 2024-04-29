@@ -35,9 +35,8 @@ export class ChannelMapper {
       return user;
     });
 
-    let workspace: WorkspaceEntity | undefined = undefined;
+    const workspace = new WorkspaceEntity();
     if (channel.workspace) {
-      workspace = new WorkspaceEntity();
       workspace.id = Number(channel.workspace.id);
     }
 

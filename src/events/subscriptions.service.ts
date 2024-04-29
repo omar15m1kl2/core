@@ -51,7 +51,7 @@ export class SubscriptionEventsService {
     };
   }
 
-  async handleSubscribe(
+  async subscribe(
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
