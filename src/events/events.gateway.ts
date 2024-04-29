@@ -23,10 +23,11 @@ import { WsCatchAllFilter } from './exceptions/ws-catch-all';
 import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
-import { ChannelDeletedDto } from './dto/channel-deleted.dto';
+import { ChannelCreatedDto } from './dto/channel-created.dto';
 import { MessagesEventService } from './messages.service';
 import { SubscriptionEventsService } from './subscriptions.service';
-import { ChannelsEventsService } from './channels.service';
+import { ChannelsEventService } from './channels.service';
+import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -43,7 +44,7 @@ export class EventsGateway {
     private readonly configService: ConfigService<AllConfigType>,
     private readonly messagesService: MessagesEventService,
     private readonly subscriptionService: SubscriptionEventsService,
-    private readonly channelsService: ChannelsEventsService,
+    private readonly channelsService: ChannelsEventService,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -57,7 +58,7 @@ export class EventsGateway {
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
-    return this.subscriptionService.handleSubscribe(client, payload);
+    return this.subscriptionService.subscribe(client, payload);
   }
 
   @SubscribeMessage(Events.UNSUBSCRIBE)
@@ -98,5 +99,13 @@ export class EventsGateway {
     payload: ChannelDeletedDto,
   ): Promise<EventReplyDto> {
     return this.channelsService.channelDeleted(client, payload);
+  }
+
+  @SubscribeMessage(Events.CHANNEL_CREATED)
+  async channelCreated(
+    client: any,
+    payload: ChannelCreatedDto,
+  ): Promise<EventReplyDto> {
+    return this.channelsService.channelCreated(client, payload);
   }
 }
