@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscriptionDto } from './dto/subscribe.dto';
 import { RoomType } from './enums/room-type.enum';
-import { Events } from './enums/events.enum';
-import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 import { ChannelsService } from 'src/channels/channels.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
@@ -117,29 +115,5 @@ export class SubscriptionEventsService {
     }
 
     return handler();
-  }
-  async channelDeleted(
-    client: any,
-    payload: ChannelDeletedDto,
-  ): Promise<EventReplyDto> {
-    await this.channelsService.softDelete(client.user, payload.id);
-
-    const channelDeleted = {
-      id: payload.id,
-      workspaceId: payload.broadcast.workspace_id,
-    };
-
-    client
-      .to('channel' + payload.id)
-      .emit(Events.CHANNEL_DELETED, channelDeleted);
-
-    return {
-      status: 'OK',
-      data: {
-        channel_id: payload.id,
-        message: 'Channel successfully deleted',
-      },
-      seq_reply: payload.seq,
-    };
   }
 }

@@ -26,6 +26,7 @@ import { Events } from './enums/events.enum';
 import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 import { MessagesEventService } from './messages.service';
 import { SubscriptionEventsService } from './subscriptions.service';
+import { ChannelsEventsService } from './channels.service';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -42,6 +43,7 @@ export class EventsGateway {
     private readonly configService: ConfigService<AllConfigType>,
     private readonly messagesService: MessagesEventService,
     private readonly subscriptionService: SubscriptionEventsService,
+    private readonly channelsService: ChannelsEventsService,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -95,6 +97,6 @@ export class EventsGateway {
     client: any,
     payload: ChannelDeletedDto,
   ): Promise<EventReplyDto> {
-    return this.subscriptionService.channelDeleted(client, payload);
+    return this.channelsService.channelDeleted(client, payload);
   }
 }
