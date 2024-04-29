@@ -20,11 +20,13 @@ import { MessageSentDto } from './dto/message-sent.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscriptionDto } from './dto/subscribe.dto';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
-import { EventsService } from './events.service';
 import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
 import { ChannelCreatedDto } from './dto/channel-created.dto';
+import { MessagesEventService } from './messages.service';
+import { SubscriptionEventsService } from './subscriptions.service';
+import { ChannelsEventService } from './channels.service';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -39,7 +41,9 @@ import { ChannelCreatedDto } from './dto/channel-created.dto';
 export class EventsGateway {
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
-    private readonly eventsService: EventsService,
+    private readonly messagesService: MessagesEventService,
+    private readonly subscriptionService: SubscriptionEventsService,
+    private readonly channelsService: ChannelsEventService,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -53,7 +57,7 @@ export class EventsGateway {
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.handleSubscribe(client, payload);
+    return this.subscriptionService.subscribe(client, payload);
   }
 
   @SubscribeMessage(Events.UNSUBSCRIBE)
@@ -61,7 +65,7 @@ export class EventsGateway {
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.unsubscribe(client, payload);
+    return this.subscriptionService.unsubscribe(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_SENT)
@@ -69,7 +73,7 @@ export class EventsGateway {
     client: any,
     payload: MessageSentDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.messageSent(client, payload);
+    return this.messagesService.messageSent(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_DELETED)
@@ -77,7 +81,7 @@ export class EventsGateway {
     client: any,
     payload: MessageDeletedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.messageDeleted(client, payload);
+    return this.messagesService.messageDeleted(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_UPDATED)
@@ -85,7 +89,7 @@ export class EventsGateway {
     client: any,
     payload: MessageUpdatedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.messageUpdated(client, payload);
+    return this.messagesService.messageUpdated(client, payload);
   }
 
   @SubscribeMessage(Events.CHANNEL_CREATED)
@@ -93,6 +97,6 @@ export class EventsGateway {
     client: any,
     payload: ChannelCreatedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.channelCreated(client, payload);
+    return this.channelsService.channelCreated(client, payload);
   }
 }

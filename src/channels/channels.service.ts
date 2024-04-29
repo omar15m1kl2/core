@@ -46,7 +46,6 @@ export class ChannelsService {
   async getChannelById(user: User, id: Channel['id']) {
     const channel = await this.channelRepostory.findOne({ id });
 
-    console.log(channel);
     if (!channel) {
       throw new NotFoundException();
     }
@@ -130,7 +129,6 @@ export class ChannelsService {
         Logger.error(error);
       }
     });
-    console.log(usersToAddPromises);
 
     await Promise.all(usersToAddPromises);
     return { addedUsers, duplicateUsers };
