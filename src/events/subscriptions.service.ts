@@ -1,19 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { ChannelsService } from 'src/channels/channels.service';
-import { MessagesService } from 'src/messages/messages.service';
-import { SubscriptionDto } from './dto/subscribe.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
+import { SubscriptionDto } from './dto/subscribe.dto';
 import { RoomType } from './enums/room-type.enum';
+import { ChannelsService } from 'src/channels/channels.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Injectable()
-export class EventsService {
+export class SubscriptionEventsService {
   constructor(
     private readonly workspacesService: WorkspacesService,
     private readonly channelsService: ChannelsService,
-    private readonly messagesService: MessagesService,
   ) {}
-
   private async handleSubscription(
     client: any,
     payload: SubscriptionDto,
