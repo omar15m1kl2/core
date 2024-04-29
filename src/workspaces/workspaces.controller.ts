@@ -50,15 +50,16 @@ export class WorkspacesController {
     groups: ['me'],
   })
   @HttpCode(HttpStatus.OK)
-  async getWorkspaces(@Request() request, @Query() query: any) {
-    query.page = query.page ?? 1;
-    query.limit = query.limit ?? 10;
+  async getWorkspaces(@Request() request, @Query() query: IPaginationOptions) {
+    const page = query?.page ?? 1;
+    let limit = query?.limit ?? 10;
+    if (limit > 50) {
+      limit = 50;
+    }
+
     return infinityPagination(
-      await this.service.getWorkspaces(request.user, query),
-      {
-        page: query.page,
-        limit: query.limit,
-      },
+      await this.service.getWorkspaces(request.user, { page, limit }),
+      { page: Number(page), limit: Number(limit) },
     );
   }
 
