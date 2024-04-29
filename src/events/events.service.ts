@@ -9,6 +9,7 @@ import { RoomType } from './enums/room-type.enum';
 import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
+import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 
 @Injectable()
 export class EventsService {
@@ -179,6 +180,7 @@ export class EventsService {
       seq_reply: payload.seq,
     };
   }
+
   async messageUpdated(
     client: any,
     payload: MessageUpdatedDto,
@@ -207,6 +209,31 @@ export class EventsService {
     return {
       status: 'OK',
       data: { message },
+      seq_reply: payload.seq,
+    };
+  }
+
+  async channelDeleted(
+    client: any,
+    payload: ChannelDeletedDto,
+  ): Promise<EventReplyDto> {
+    await this.channelsService.softDelete(client.user, payload.id);
+
+    const channelDeleted = {
+      id: payload.id,
+      workspaceId: payload.broadcast.workspace_id,
+    };
+
+    client
+      .to('workspace' + payload.broadcast.workspace_id)
+      .emit(Events.CHANNEL_DELETED, channelDeleted);
+
+    return {
+      status: 'OK',
+      data: {
+        channel_id: payload.id,
+        message: 'Channel successfully deleted',
+      },
       seq_reply: payload.seq,
     };
   }
