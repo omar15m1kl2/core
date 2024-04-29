@@ -102,15 +102,13 @@ export class ChannelsEventService {
     client: any,
     payload: UsersAddedDto,
   ): Promise<EventReplyDto> {
-    console.log('payload', payload);
     const result = await this.workspaceChannelService.addUsersToChannel(
       client.user,
-      payload.workspace_id,
-      payload.channel_id,
+      payload.broadcast.workspace_id,
+      payload.broadcast.channel_id,
       payload.data,
     );
 
-    console.log('result', result);
     if (!result) {
       return {
         status: 'FAILED',
@@ -122,7 +120,9 @@ export class ChannelsEventService {
       };
     }
 
-    client.to('channel' + payload.channel_id).emit(Events.USERS_ADDED, result);
+    client
+      .to('channel' + payload.broadcast.channel_id)
+      .emit(Events.USERS_ADDED, result);
 
     return {
       status: 'OK',
