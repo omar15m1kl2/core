@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ChannelsService } from 'src/channels/channels.service';
 import { Channel } from 'src/channels/domain/channel';
+import { AddUsersToChannelDto } from 'src/channels/dto/add-users-to-channel.dto';
 import {
   FilterChannelDto,
   SortChannelDto,
@@ -25,7 +26,7 @@ export class WorkspaceChannelService {
     user: User,
     workspaceId: Workspace['id'],
     channelId: Channel['id'],
-    users: User[],
+    data: AddUsersToChannelDto,
   ) {
     const channel = await this.channelsService.getChannelById(user, channelId);
     if (!channel) {
@@ -35,10 +36,7 @@ export class WorkspaceChannelService {
       return new ForbiddenException();
     }
 
-    const usersToAdd = await this.getWorkspaceMembers(users, workspaceId);
-    if (usersToAdd.length === 0) {
-      return;
-    }
+    const usersToAdd = await this.getWorkspaceMembers(data.users, workspaceId);
 
     return await this.channelsService.addUsersToChannel(channelId, usersToAdd);
   }

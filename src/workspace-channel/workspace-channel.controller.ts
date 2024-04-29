@@ -47,7 +47,7 @@ export class WorkspaceChannelController {
       request.user,
       workspaceId,
       channelId,
-      body.Users,
+      body,
     );
   }
 

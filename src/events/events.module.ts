@@ -7,9 +7,16 @@ import { ChannelsModule } from 'src/channels/channels.module';
 import { MessagesEventService } from './messages.service';
 import { SubscriptionEventsService } from './subscriptions.service';
 import { ChannelsEventService } from './channels.service';
+import { WorkspaceChannelModule } from 'src/workspace-channel/workspace-channel.module';
 
 @Module({
-  imports: [AuthModule, MessagesModule, WorkspacesModule, ChannelsModule],
+  imports: [
+    AuthModule,
+    MessagesModule,
+    WorkspacesModule,
+    ChannelsModule,
+    WorkspaceChannelModule,
+  ],
   exports: [EventsGateway],
   providers: [
     EventsGateway,

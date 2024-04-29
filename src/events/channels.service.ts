@@ -5,10 +5,15 @@ import { EventReplyDto } from './dto/event-reply.dto';
 import { Events } from './enums/events.enum';
 import { ChannelCreatedDto } from './dto/channel-created.dto';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
+import { WorkspaceChannelService } from 'src/workspace-channel/workspace-channel.service';
+import { UsersAddedDto } from './dto/users-added.dto';
 
 @Injectable()
 export class ChannelsEventService {
-  constructor(private readonly channelsService: ChannelsService) {}
+  constructor(
+    private readonly channelsService: ChannelsService,
+    private readonly workspaceChannelService: WorkspaceChannelService,
+  ) {}
   async channelCreated(
     client: any,
     payload: ChannelCreatedDto,
@@ -90,6 +95,39 @@ export class ChannelsEventService {
         channel_id: payload.id,
         message: 'Channel successfully deleted',
       },
+    };
+  }
+
+  async usersAdded(
+    client: any,
+    payload: UsersAddedDto,
+  ): Promise<EventReplyDto> {
+    console.log('payload', payload);
+    const result = await this.workspaceChannelService.addUsersToChannel(
+      client.user,
+      payload.workspace_id,
+      payload.channel_id,
+      payload.data,
+    );
+
+    console.log('result', result);
+    if (!result) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '500',
+          message: 'Internal Server Error',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    client.to('channel' + payload.channel_id).emit(Events.USERS_ADDED, result);
+
+    return {
+      status: 'OK',
+      data: { result },
+      seq_reply: payload.seq,
     };
   }
 }

@@ -29,6 +29,7 @@ import { SubscriptionEventsService } from './subscriptions.service';
 import { ChannelsEventService } from './channels.service';
 import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
+import { UsersAddedDto } from './dto/users-added.dto';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -116,5 +117,13 @@ export class EventsGateway {
     payload: ChannelUpdatedDto,
   ): Promise<EventReplyDto> {
     return this.channelsService.channelUpdated(client, payload);
+  }
+
+  @SubscribeMessage(Events.USERS_ADDED)
+  async usersAdded(
+    client: any,
+    payload: UsersAddedDto,
+  ): Promise<EventReplyDto> {
+    return this.channelsService.usersAdded(client, payload);
   }
 }
