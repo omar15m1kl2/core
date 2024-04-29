@@ -225,7 +225,7 @@ export class EventsService {
     };
 
     client
-      .to('workspace' + payload.broadcast.workspace_id)
+      .to('channel' + payload.id)
       .emit(Events.CHANNEL_DELETED, channelDeleted);
 
     return {
