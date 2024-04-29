@@ -20,10 +20,11 @@ import { MessageSentDto } from './dto/message-sent.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { SubscriptionDto } from './dto/subscribe.dto';
 import { WsCatchAllFilter } from './exceptions/ws-catch-all';
-import { EventsService } from './events.service';
 import { MessageDeletedDto } from './dto/message-deleted.dto';
 import { MessageUpdatedDto } from './dto/message-updated.dto';
 import { Events } from './enums/events.enum';
+import { MessagesEventService } from './messages.service';
+import { SubscriptionEventsService } from './subscriptions.service';
 
 @WebSocketGateway({
   namespace: 'events',
@@ -38,7 +39,8 @@ import { Events } from './enums/events.enum';
 export class EventsGateway {
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
-    private readonly eventsService: EventsService,
+    private readonly messagesService: MessagesEventService,
+    private readonly subscriptionService: SubscriptionEventsService,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -52,7 +54,7 @@ export class EventsGateway {
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.handleSubscribe(client, payload);
+    return this.subscriptionService.handleSubscribe(client, payload);
   }
 
   @SubscribeMessage(Events.UNSUBSCRIBE)
@@ -60,7 +62,7 @@ export class EventsGateway {
     client: any,
     payload: SubscriptionDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.unsubscribe(client, payload);
+    return this.subscriptionService.unsubscribe(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_SENT)
@@ -68,7 +70,7 @@ export class EventsGateway {
     client: any,
     payload: MessageSentDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.messageSent(client, payload);
+    return this.messagesService.messageSent(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_DELETED)
@@ -76,7 +78,7 @@ export class EventsGateway {
     client: any,
     payload: MessageDeletedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.messageDeleted(client, payload);
+    return this.messagesService.messageDeleted(client, payload);
   }
 
   @SubscribeMessage(Events.MESSAGE_UPDATED)
@@ -84,6 +86,6 @@ export class EventsGateway {
     client: any,
     payload: MessageUpdatedDto,
   ): Promise<EventReplyDto> {
-    return this.eventsService.messageUpdated(client, payload);
+    return this.messagesService.messageUpdated(client, payload);
   }
 }
