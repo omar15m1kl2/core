@@ -28,6 +28,8 @@ import { MessagesEventService } from './messages.service';
 import { SubscriptionEventsService } from './subscriptions.service';
 import { ChannelsEventService } from './channels.service';
 import { ChannelDeletedDto } from './dto/channel-deleted.dto';
+import { WorkspaceUpdatedDto } from './dto/workspace-updated.dto';
+import { WorkspacesEventService } from './workspaces.service';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
 
 @WebSocketGateway({
@@ -46,6 +48,7 @@ export class EventsGateway {
     private readonly messagesService: MessagesEventService,
     private readonly subscriptionService: SubscriptionEventsService,
     private readonly channelsService: ChannelsEventService,
+    private readonly workspacesService: WorkspacesEventService,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -118,6 +121,13 @@ export class EventsGateway {
     return this.channelsService.channelUpdated(client, payload);
   }
 
+  @SubscribeMessage(Events.WORKSPACE_UPDATED)
+  async workspaceUpdated(
+    client: any,
+    payload: WorkspaceUpdatedDto,
+  ): Promise<EventReplyDto> {
+    return this.workspacesService.workspaceUpdated(client, payload);
+  }
   @SubscribeMessage(Events.TYPING)
   async typing(client: any, payload: any): Promise<EventReplyDto> {
     return this.channelsService.typing(client, payload);
