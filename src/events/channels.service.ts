@@ -11,6 +11,7 @@ import { ChannelCreatedDto } from './dto/channel-created.dto';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
 import { WorkspaceChannelService } from 'src/workspace-channel/workspace-channel.service';
 import { UsersAddedDto } from './dto/users-added.dto';
+import { RoomType } from './enums/room-type.enum';
 
 @Injectable()
 export class ChannelsEventService {
@@ -134,8 +135,8 @@ export class ChannelsEventService {
 
       if (addedUsers.length > 0) {
         client
-          .to('channel' + payload.broadcast.channel_id)
-          .emit(Events.USERS_ADDED, addedUsers);
+          .to(RoomType.Channel + payload.broadcast.channel_id)
+          .emit(payload.event, addedUsers);
       }
     }
 
