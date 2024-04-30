@@ -12,6 +12,7 @@ import { ChannelUpdatedDto } from './dto/channel-updated.dto';
 import { WorkspaceChannelService } from 'src/workspace-channel/workspace-channel.service';
 import { UsersAddedDto } from './dto/users-added.dto';
 import { RoomType } from './enums/room-type.enum';
+import { TypingEventDto } from './dto/typing.dto';
 
 @Injectable()
 export class ChannelsEventService {
@@ -145,5 +146,19 @@ export class ChannelsEventService {
       data: { result },
       seq_reply: payload.seq,
     };
+  }
+
+  async typing(client: any, payload: TypingEventDto): Promise<EventReplyDto> {
+    client
+      .to(RoomType.Channel + payload.broadcast.channel_id)
+      .emit(payload.event, {
+        user_id: client.user.id,
+        channel_id: payload.broadcast.channel_id,
+      });
+
+    return Promise.resolve({
+      status: 'OK',
+      seq_reply: payload.seq,
+    });
   }
 }
