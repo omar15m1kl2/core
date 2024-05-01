@@ -1,16 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
 import { Events } from './enums/events.enum';
 import { ChannelCreatedDto } from './dto/channel-created.dto';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
+import { WorkspaceChannelService } from 'src/workspace-channel/workspace-channel.service';
+import { UsersAddedToChannelDto } from './dto/users-added-to-channel.dto';
 import { RoomType } from './enums/room-type.enum';
 import { TypingEventDto } from './dto/typing.dto';
 
 @Injectable()
 export class ChannelsEventService {
-  constructor(private readonly channelsService: ChannelsService) {}
+  constructor(
+    private readonly channelsService: ChannelsService,
+    private readonly workspaceChannelService: WorkspaceChannelService,
+  ) {}
   async channelCreated(
     client: any,
     payload: ChannelCreatedDto,
@@ -92,6 +101,65 @@ export class ChannelsEventService {
         channel_id: payload.id,
         message: 'Channel successfully deleted',
       },
+    };
+  }
+
+  async usersAdded(
+    client: any,
+    payload: UsersAddedToChannelDto,
+  ): Promise<EventReplyDto> {
+    const result = await this.workspaceChannelService.addUsersToChannel(
+      client.user,
+      payload.workspace_id,
+      payload.broadcast.channel_id,
+      payload.data,
+    );
+
+    if (result instanceof NotFoundException) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '404',
+          message: 'Not Found',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    if (result instanceof ForbiddenException) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '403',
+          message: 'Forbidden',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    if (!result) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '500',
+          message: 'Internal Server Error',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    const { addedUsers } = result;
+
+    if (addedUsers.length > 0) {
+      client
+        .to(RoomType.Channel + payload.broadcast.channel_id)
+        .emit(payload.event, addedUsers);
+    }
+
+    return {
+      status: 'OK',
+      data: { result },
+      seq_reply: payload.seq,
     };
   }
 

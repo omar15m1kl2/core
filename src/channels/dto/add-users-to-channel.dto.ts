@@ -10,5 +10,5 @@ export class AddUsersToChannelDto {
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => User)
-  Users: User[];
+  users: User[];
 }
