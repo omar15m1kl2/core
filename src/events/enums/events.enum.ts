@@ -8,6 +8,6 @@ export enum Events {
   CHANNEL_UPDATED = 'channel_updated',
   CHANNEL_DELETED = 'channel_deleted',
   WORKSPACE_UPDATED = 'workspace_updated',
-  USERS_ADDED = 'users_added',
+  USERS_ADDED_TO_CHANNEL = 'users_added_to_channel',
   TYPING = 'typing',
 }

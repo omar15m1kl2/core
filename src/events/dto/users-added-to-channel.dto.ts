@@ -8,12 +8,12 @@ import { Workspace } from 'src/workspaces/domain/workspace';
 class BroadcastUsersAddedDto extends BroadcastDto {
   @IsNotEmpty()
   channel_id: Channel['id'];
-
-  @IsNotEmpty()
-  workspace_id: Workspace['id'];
 }
 
-export class UsersAddedDto extends EventDto {
+export class UsersAddedToChannelDto extends EventDto {
+  @IsNotEmpty()
+  workspace_id: Workspace['id'];
+
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => AddUsersToChannelDto)

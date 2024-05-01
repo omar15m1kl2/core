@@ -10,7 +10,7 @@ import { Events } from './enums/events.enum';
 import { ChannelCreatedDto } from './dto/channel-created.dto';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
 import { WorkspaceChannelService } from 'src/workspace-channel/workspace-channel.service';
-import { UsersAddedDto } from './dto/users-added.dto';
+import { UsersAddedToChannelDto } from './dto/users-added-to-channel.dto';
 import { RoomType } from './enums/room-type.enum';
 import { TypingEventDto } from './dto/typing.dto';
 
@@ -106,14 +106,36 @@ export class ChannelsEventService {
 
   async usersAdded(
     client: any,
-    payload: UsersAddedDto,
+    payload: UsersAddedToChannelDto,
   ): Promise<EventReplyDto> {
     const result = await this.workspaceChannelService.addUsersToChannel(
       client.user,
-      payload.broadcast.workspace_id,
+      payload.workspace_id,
       payload.broadcast.channel_id,
       payload.data,
     );
+
+    if (result instanceof NotFoundException) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '404',
+          message: 'Not Found',
+        },
+        seq_reply: payload.seq,
+      };
+    }
+
+    if (result instanceof ForbiddenException) {
+      return {
+        status: 'FAILED',
+        error: {
+          id: '403',
+          message: 'Forbidden',
+        },
+        seq_reply: payload.seq,
+      };
+    }
 
     if (!result) {
       return {
@@ -126,19 +148,12 @@ export class ChannelsEventService {
       };
     }
 
-    if (
-      !(
-        result instanceof NotFoundException ||
-        result instanceof ForbiddenException
-      )
-    ) {
-      const { addedUsers } = result;
+    const { addedUsers } = result;
 
-      if (addedUsers.length > 0) {
-        client
-          .to(RoomType.Channel + payload.broadcast.channel_id)
-          .emit(payload.event, addedUsers);
-      }
+    if (addedUsers.length > 0) {
+      client
+        .to(RoomType.Channel + payload.broadcast.channel_id)
+        .emit(payload.event, addedUsers);
     }
 
     return {
