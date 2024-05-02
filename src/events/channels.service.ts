@@ -6,7 +6,6 @@ import {
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDeletedDto } from './dto/channel-deleted.dto';
 import { EventReplyDto } from './dto/event-reply.dto';
-import { Events } from './enums/events.enum';
 import { ChannelCreatedDto } from './dto/channel-created.dto';
 import { ChannelUpdatedDto } from './dto/channel-updated.dto';
 import { WorkspaceChannelService } from 'src/workspace-channel/workspace-channel.service';
@@ -40,7 +39,7 @@ export class ChannelsEventService {
       };
     }
 
-    client.to('channel' + channel.id).emit(Events.CHANNEL_CREATED, channel);
+    client.to(RoomType.Channel + channel.id).emit(payload.event, channel);
 
     return {
       status: 'OK',
@@ -70,7 +69,7 @@ export class ChannelsEventService {
       };
     }
 
-    client.to('channel' + payload.id).emit(Events.CHANNEL_UPDATED, channel);
+    client.to(RoomType.Channel + payload.id).emit(payload.event, channel);
 
     return {
       status: 'OK',
@@ -91,8 +90,8 @@ export class ChannelsEventService {
     };
 
     client
-      .to('channel' + payload.id)
-      .emit(Events.CHANNEL_DELETED, channelDeleted);
+      .to(RoomType.Channel + payload.id)
+      .emit(payload.event, channelDeleted);
 
     return {
       status: 'OK',
