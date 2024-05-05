@@ -30,9 +30,11 @@ export class MessageRelationalRepository implements MessageRepository {
 
   async create(data: Message): Promise<Message> {
     const presistenceModel = MessageMapper.toPersistence(data);
+    console.log(presistenceModel);
     const newEntity = await this.messageRepository.save(
       this.messageRepository.create(presistenceModel),
     );
+    await loadRelationships(this.messageRepository, ['sender'], [newEntity]);
     return MessageMapper.toDomain(newEntity);
   }
 
@@ -125,6 +127,7 @@ export class MessageRelationalRepository implements MessageRepository {
         'sender',
         'sender.id = message.senderId',
       )
+      .leftJoinAndSelect('sender.photo', 'photo', 'photo.id = sender.photoId')
       .leftJoinAndSelect(
         'message.channel',
         'channel',
@@ -148,6 +151,9 @@ export class MessageRelationalRepository implements MessageRepository {
         'sender.firstName',
         'sender.lastName',
         'sender.username',
+        'sender.photo',
+        'photo.id',
+        'photo.path',
         'channel.id',
         'channel.title',
         'workspace.id',
@@ -190,6 +196,7 @@ export class MessageRelationalRepository implements MessageRepository {
     }
 
     const messages = await query.take(paginationOptions.limit + 1).getMany();
+    console.log(messages[0].sender);
 
     let nextCursor: number | null = null;
     if (messages.length > paginationOptions.limit) {

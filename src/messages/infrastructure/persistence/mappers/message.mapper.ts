@@ -17,6 +17,7 @@ export class MessageMapper {
     message.sender = {
       id: raw.sender.id,
       firstName: raw.sender.firstName,
+      lastName: raw.sender.lastName,
       photo: raw.sender.photo,
     };
     message.channel = {
