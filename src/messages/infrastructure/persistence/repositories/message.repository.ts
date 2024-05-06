@@ -30,7 +30,6 @@ export class MessageRelationalRepository implements MessageRepository {
 
   async create(data: Message): Promise<Message> {
     const presistenceModel = MessageMapper.toPersistence(data);
-    console.log(presistenceModel);
     const newEntity = await this.messageRepository.save(
       this.messageRepository.create(presistenceModel),
     );
@@ -147,6 +146,7 @@ export class MessageRelationalRepository implements MessageRepository {
         'message.id',
         'message.content',
         'message.createdAt',
+        'message.childsCount',
         'sender.id',
         'sender.firstName',
         'sender.lastName',
@@ -196,7 +196,6 @@ export class MessageRelationalRepository implements MessageRepository {
     }
 
     const messages = await query.take(paginationOptions.limit + 1).getMany();
-    console.log(messages[0].sender);
 
     let nextCursor: number | null = null;
     if (messages.length > paginationOptions.limit) {
