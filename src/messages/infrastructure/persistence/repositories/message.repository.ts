@@ -33,7 +33,11 @@ export class MessageRelationalRepository implements MessageRepository {
     const newEntity = await this.messageRepository.save(
       this.messageRepository.create(presistenceModel),
     );
-    await loadRelationships(this.messageRepository, ['sender'], [newEntity]);
+    await loadRelationships(
+      this.messageRepository,
+      ['sender', 'parentMessage'],
+      [newEntity],
+    );
     return MessageMapper.toDomain(newEntity);
   }
 
@@ -46,7 +50,7 @@ export class MessageRelationalRepository implements MessageRepository {
 
     await loadRelationships(
       this.messageRepository,
-      ['channel', 'sender', 'workspace'],
+      ['channel', 'sender', 'workspace', 'parentMessage'],
       [entity],
     );
 
