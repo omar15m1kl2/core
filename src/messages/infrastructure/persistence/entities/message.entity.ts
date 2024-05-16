@@ -1,5 +1,6 @@
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import {
+  Check,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -14,16 +15,21 @@ import { Message } from '../../../domain/message';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { WorkspaceEntity } from 'src/workspaces/infrastructure/persistence/entities/workspace.entity';
 import { ChannelEntity } from 'src/channels/infrastructure/persistence/entities/channel.entity';
+import { FileType } from 'src/files/domain/file';
+import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
 
 @Entity({
   name: 'message',
 })
+@Check(`"
+  (content IS NOT NULL OR files IS NOT NULL)
+"`)
 export class MessageEntity extends EntityRelationalHelper implements Message {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: String })
-  content: string;
+  @Column({ type: String, nullable: true })
+  content?: string;
 
   @Column({ default: 0 })
   childsCount: number;
@@ -65,4 +71,8 @@ export class MessageEntity extends EntityRelationalHelper implements Message {
     },
   })
   participants: UserEntity[];
+
+  @ManyToMany(() => FileEntity, (file) => file.messages)
+  @JoinTable()
+  files?: FileType[];
 }

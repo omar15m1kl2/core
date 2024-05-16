@@ -50,7 +50,7 @@ export class MessageRelationalRepository implements MessageRepository {
 
     await loadRelationships(
       this.messageRepository,
-      ['channel', 'sender', 'workspace', 'parentMessage'],
+      ['channel', 'sender', 'workspace', 'files', 'parentMessage'],
       [entity],
     );
 
@@ -146,11 +146,14 @@ export class MessageRelationalRepository implements MessageRepository {
         'parentMessage',
         'parentMessage.id = message.parentMessageId',
       )
+      .leftJoinAndSelect('message.files', 'files')
       .select([
         'message.id',
         'message.content',
         'message.createdAt',
         'message.childsCount',
+        'files.id',
+        'files.path',
         'sender.id',
         'sender.firstName',
         'sender.lastName',

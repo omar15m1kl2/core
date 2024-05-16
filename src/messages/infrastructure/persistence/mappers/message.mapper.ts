@@ -24,6 +24,7 @@ export class MessageMapper {
       id: raw.channel.id,
     };
     message.workspace = raw.workspace;
+    message.files = raw.files;
     if (raw.parentMessage) {
       message.parentMessage = {
         id: raw.parentMessage.id,
@@ -36,7 +37,9 @@ export class MessageMapper {
   static toPersistence(message: Message): MessageEntity {
     const messageEntity = new MessageEntity();
     messageEntity.id = message.id as number;
-    messageEntity.content = message.content;
+    if (message.content) {
+      messageEntity.content = message.content;
+    }
     messageEntity.childsCount = message.childsCount;
     messageEntity.draft = message.draft;
     messageEntity.createdAt = message.createdAt;
@@ -59,6 +62,10 @@ export class MessageMapper {
       const parentMessageEntity = new MessageEntity();
       parentMessageEntity.id = Number(message.parentMessage.id);
       messageEntity.parentMessage = parentMessageEntity;
+    }
+
+    if (message.files) {
+      messageEntity.files = message.files;
     }
 
     return messageEntity;
